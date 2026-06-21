@@ -1,0 +1,111 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : CLGestionnaireVHost
+ major_version : 25
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x19f2499d008a477f
+ internal_properties : BQAAAAUAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1+
+      CLGestionnaireVHost est une Classe
+      PRIVÉ
+      	m_tabVHosts		est un tableau associatif de chaînes
+      	m_FichierConf	est une chaîne
+      	m_log			est CLlog dynamique
+      FIN
+      
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1869637733979998079
+     type_code : 27
+     code : |1+
+      procédure Constructeur()
+      
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1869637733980063615
+     type_code : 28
+     code : |1+
+      procédure Destructeur()
+      
+     type : 655360
+   -
+     name : Initialisation
+     procedure_id : 1869637940138672239
+     type_code : 12
+     code : |1+
+      //-------------------------------------------------------------------------
+      // Méthode : Initialisation
+      // But     : Lire le fichier vhosts.conf et charger le tableau associatif
+      //-------------------------------------------------------------------------
+      procédure publique Initialisation(LOCAL a_FichierConf est une chaîne, LOCAL a_log est CLlog dynamique)
+      m_FichierConf	= a_FichierConf
+      m_log			= a_log
+      
+      SI PAS fFichierExiste(m_FichierConf) ALORS
+      	m_log.LogErreur("Fichier VHost introuvable, création par défaut : " + m_FichierConf)
+      	fSauveTexte(m_FichierConf, "[Hosts]" + RC + "localhost=RaaD_System")
+      FIN
+      
+      // Chargement des VHosts en mémoire
+      sContenu				est une chaîne	= fChargeTexte(m_FichierConf)
+      sLigne, sHost, sProjet	sont des chaînes
+      
+      POUR TOUTE CHAÎNE sLigne DE sContenu SÉPARÉE PAR RC
+      	sLigne = SansEspace(sLigne)
+      	
+      	// On ignore les lignes vides, les commentaires (;) et les sections ([])
+      	SI sLigne = "" OU Gauche(sLigne, 1) = ";" OU Gauche(sLigne, 1) = "[" ALORS CONTINUER
+      	
+      	// Parsing de la ligne : "domaine.com = NomDuDossier"
+      	sHost	= SansEspace(ExtraitChaîne(sLigne, 1, "="))
+      	sProjet	= SansEspace(ExtraitChaîne(sLigne, 2, "="))
+      	
+      	SI sHost <> "" ET sProjet <> "" ALORS
+      		m_tabVHosts[sHost] = sProjet
+      	FIN
+      FIN
+     type : 458752
+   -
+     name : GetRepertoireProjet
+     procedure_id : 1869638081872692230
+     type_code : 12
+     code : |1+
+      //-------------------------------------------------------------------------
+      // Méthode : GetRepertoireProjet
+      // But     : Retourne le dossier cible pour un host donné
+      //-------------------------------------------------------------------------
+      procédure publique GetRepertoireProjet(LOCAL a_Host est une chaîne) : chaîne
+      
+      // On vérifie si l'hôte existe dans notre tableau
+      SI m_tabVHosts[a_Host] <> "" ALORS
+      	RENVOYER m_tabVHosts[a_Host]
+      SINON
+      	// Si l'hôte est inconnu, on renvoie une constante ou une chaîne vide 
+      	// pour forcer la redirection vers le système par défaut
+      	RENVOYER "System" 
+      FIN
+      
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : BQAAAAUAAAA6ih3UbgNXHwTtiPSFUEj+2fi/m7v4QV2rqidAupM=
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x19f24999008737a0
+  internal_properties : BQAAAAUAAAAnMYFQ1bL/vz9ehh7L22SNNSlIzGTOI8h5F/WtgDNP
+custom_note :
+ internal_properties : BQAAAAUAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

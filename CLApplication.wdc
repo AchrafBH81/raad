@@ -1,0 +1,360 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : CLApplication
+ major_version : 25
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x1457e06300077ced
+ internal_properties : BQAAAAUAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1+
+      CLApplication est une Classe
+      	
+      prive
+      	//m_PortSocket		est un entier  	
+      	m_ServeurSocket				est CLServeurSocket dynamique 
+      	m_CanalSocket				est CLSocketCanal dynamique 			
+      	m_FichierIni				est CLIniFichier dynamique
+      	m_log						est CLlog dynamique
+      	m_system					est CLSysteme dynamique 
+      	m_Base						est CLBase dynamique  
+      	m_structureProjet			est CLGestionnaireStructureProjet dynamique
+      	m_GestionnaireVHost			est CLGestionnaireVHost dynamique
+      	m_CodeReponse				est un tableau associatif de buffers 
+      fin
+      
+      
+      
+      
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1465886919539326189
+     type_code : 27
+     code : |1-
+      procédure Constructeur()
+      
+      _Init()
+      m_ServeurSocket.Demarre()
+      
+      	
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1465886919539391725
+     type_code : 28
+     code : |1+
+      procédure Destructeur()
+      
+     type : 655360
+   -
+     name : MessageRecu
+     procedure_id : 1465891540924885333
+     type_code : 12
+     code : |1+
+      
+      procédure MessageRecu(SocketRecu est CLSocketCanal) 
+      
+      SocketRecu.AnalyseReq()
+      
+      selon SocketRecu.m_PointDentre
+      	
+      	cas "record" : 
+      		
+      		selon SocketRecu.m_TypeReq
+      			
+      			cas "GET" : 
+      				// Lecture enregistrement
+      				_GetRecord(SocketRecu)
+      			cas "POST" : 
+      				// Création enregistrement
+      				_CreateRecord(SocketRecu)
+      			cas "PUT"
+      				// Modification enregistrement
+      				_UpdateRecord(SocketRecu)
+      			cas "DELETE"
+      				// Suppression enregistrement 
+      				_DelteRecord(SocketRecu)
+      			
+      		FIN
+      		
+      	CAS "records" :
+      		
+      		_GetRecords(SocketRecu)
+      		
+      	cas "sql" : 
+      		_ExecuteSql(SocketRecu)
+      		
+      	cas "memoire"
+      		
+      		_GetMemory(SocketRecu)
+      		
+      	AUTRE CAS : 
+      		_GetFile(SocketRecu)
+      		
+      		
+      FIN
+      
+      
+      
+       SocketRecu.GetReponse()    
+      
+     type : 458752
+   -
+     name : Execute
+     procedure_id : 1466997623856337504
+     type_code : 12
+     code : |1+
+      
+      procédure Execute()
+      
+      
+      
+      
+     type : 458752
+   -
+     name : Cron
+     procedure_id : 1466999831469385569
+     type_code : 12
+     code : |1-
+      
+      procédure Cron()
+      m_ServeurSocket.attenteconnexion()
+     type : 458752
+   -
+     name : _Init
+     procedure_id : 1467015460854427412
+     type_code : 12
+     code : |1+
+      
+      procédure PRIVÉE _Init()
+      
+      
+      // 1. Initialisation de la structure (Point de départ unique)
+      m_structureProjet = new CLGestionnaireStructureProjet
+      
+      
+      
+      // 2. Initialisation du service de Log (Nécessite le répertoire Log de la structure)
+      m_log = new CLlog
+      // Imaginons une méthode d'initialisation pour le log
+      // m_log.Initialiser(m_structureProjet.P_RepLog())
+      
+      
+      
+      // 3. Initialisation du Gestionnaire de VHost
+      m_GestionnaireVHost = new CLGestionnaireVHost
+      // On utilise P_RepConf() pour localiser le fichier de configuration [cite: 119, 120]
+      m_GestionnaireVHost.Initialisation(m_structureProjet.P_RepConf + "\vhosts.conf", m_log)
+      
+      
+      m_system			= new CLSysteme
+      
+      
+      //Fichier de configuration
+      m_FichierIni		= new CLIniFichier
+      m_FichierIni.Initialisation(m_structureProjet.P_RepConf + "\config.conf",m_log) 
+      
+      //BDD
+      m_Base = new CLBase
+      m_Base.Initialisation(m_FichierIni,m_log)
+      
+      //socket 
+      m_ServeurSocket								= new CLServeurSocket
+      m_ServeurSocket.m_Proc_CallBack				= MessageRecu
+      
+      m_ServeurSocket.P_PortSocket					= Val(m_FichierIni.LireEcrireClé("Serveur","Port",8080))
+      m_ServeurSocket.p_NomSocketEcoute			= "SocketRaaD"
+     type : 458752
+   -
+     name : _GetRecord
+     procedure_id : 1473736444733868589
+     type_code : 12
+     code : |1+
+      procédure prive _GetRecord(l_HttpReq est CLSocketCanal)
+      
+      // Affectation par copie 
+      
+      L_record est  CLRecord
+      L_record <= m_Base.m_Table[l_HttpReq.m_Parametres["table"]]
+      
+      L_record.Load(l_HttpReq.m_Parametres["valkey"],l_HttpReq.m_Parametres["condition"])
+      
+      si L_record.m_erreur <> "" ALORS
+      	l_HttpReq.m_CodeReponse		= "401"
+      	l_HttpReq.m_ContenuBuffer	= L_record.m_erreur
+      sinon
+      	l_HttpReq.m_CodeReponse = "200 OK"
+      	l_HttpReq.m_ContenuBuffer = L_record.m_json
+      FIN
+      
+      
+      
+     type : 458752
+   -
+     name : _ExecuteSql
+     procedure_id : 1473738635167241172
+     type_code : 12
+     code : |1+
+      procédure Privé _ExecuteSql(l_HttpReq est CLSocketCanal)
+      
+      
+      l_base est CLBase dynamique = allouer CLBase
+      l_base <= m_Base
+      
+      Chainereq est chaine 
+      Chainereq = l_HttpReq.m_Parametres["sql"]
+      
+      l_HttpReq.m_CodeReponse = "200 OK"
+     type : 458752
+   -
+     name : _GetMemory
+     procedure_id : 1475447456628364679
+     type_code : 12
+     code : |1+
+      procédure privée _GetMemory(l_HttpReq est CLSocketCanal) <métier>
+      
+     type : 458752
+   -
+     name : _GetFile
+     procedure_id : 1478157130026548149
+     type_code : 12
+     code : |1-
+      procédure privée _GetFile(l_HttpReq est CLSocketCanal)<métier>
+      
+      l_HttpReq.GetFile()
+     type : 458752
+   -
+     name : _GetRecords
+     procedure_id : 1478385377465361484
+     type_code : 12
+     code : |1-
+      procédure privée _GetRecords(l_HttpReq est CLSocketCanal)
+      
+      
+      
+      
+      
+      //l_resjson = l_HttpReq.m_ContenuBuffer
+      //lreschaine est chaine = JSONVersChaîne(l_resjson)
+      //
+      //
+      //sresbuffer est un buffer
+      //Sérialise(l_base.ExecuteSql("SELECT * FROM WBLignePieces where WBLignePieces.IDwb_piece = 110905"),sresbuffer,psdJSON)
+      //
+      //l_resjson = sresbuffer
+      //
+      //l_json est une chaîne = JSONVersChaîne(l_resjson)
+      //
+      //
+      //lres est chaine = lreschaine[[ A Taille(lreschaine)-1]]
+      //
+      //lres += [
+      //,"WBLignePieces":
+      //	{
+      //		"m_Records":
+      //]
+      //
+      //lres += l_resjson
+      //
+      //lres += [
+      //}
+      //}
+      //]
+      //
+      //
+      //
+      //l_HttpReq.m_ContenuBuffer = ChaîneVersJSON(lres)
+     type : 458752
+   -
+     name : _UpdateRecord
+     procedure_id : 1515318213611328442
+     type_code : 12
+     code : |1+
+      procédure privée _UpdateRecord(l_HttpReq est CLSocketCanal)
+      
+      L_record est  CLRecord
+      L_record <= m_Base.m_Table[l_HttpReq.m_Parametres["table"]]
+      L_record.m_json = l_HttpReq.m_CorpReq
+      L_record.Update()
+      
+      SI L_record.m_erreur <> "" ALORS
+      	l_HttpReq.m_CodeReponse		= "401"
+      	l_HttpReq.m_ContenuBuffer	= L_record.m_erreur
+      SINON
+      	l_HttpReq.m_CodeReponse		= "200 OK"
+      	l_HttpReq.m_ContenuBuffer	= L_record.m_json
+      FIN
+     type : 458752
+   -
+     name : _CreateRecord
+     procedure_id : 1521641157040203827
+     type_code : 12
+     code : |1+
+      procédure privée _CreateRecord(l_HttpReq est CLSocketCanal)
+      
+      // Déclaration d'une instance locale au thread.
+      // L'utilisation de l'opérateur '<=' effectue une affectation par copie (et non par référence).
+      // Cela permet de cloner l'objet "prototype" préchargé dans m_Base.m_Table afin 
+      // d'obtenir une instance physiquement indépendante et propre à cette requête HTTP.
+      // Cela garantit que les données (ex: m_json, m_erreur) ne s'écrasent pas entre deux clients simultanés (Thread-Safe).
+      L_record est  CLRecord
+      L_record <= m_Base.m_Table[l_HttpReq.m_Parametres["table"]]
+      
+      
+      
+      L_record.m_json = l_HttpReq.m_CorpReq
+      L_record.Create()
+      
+      SI L_record.m_erreur <> "" ALORS
+      	l_HttpReq.m_CodeReponse		= "401"
+      	l_HttpReq.m_ContenuBuffer	= L_record.m_erreur
+      SINON
+      	l_HttpReq.m_CodeReponse		= "200 OK"
+      	l_HttpReq.m_ContenuBuffer	= L_record.m_json
+      FIN
+      
+      libérer L_record
+     type : 458752
+   -
+     name : _DelteRecord
+     procedure_id : 1522551269196454160
+     type_code : 12
+     code : |1+
+      procédure privée _DelteRecord(l_HttpReq est CLSocketCanal)
+      
+      
+      
+     type : 458752
+   -
+     name : arret
+     procedure_id : 1537883580879643271
+     type_code : 12
+     code : |1+
+      procédure arret()
+      
+      m_ServeurSocket.arret()
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : BQAAAAUAAAA6ih3UbgNXHwTtiPSFUEj+2fi/m7v4QV2rqidAupM=
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x1457e05800014f55
+  internal_properties : BQAAAAUAAAAnMYFQ1bL/vz9ehh7L22SNNSlIzGTOI8h5F/WtgDNP
+  strings :
+   -
+     text : {}
+     index : 0
+custom_note :
+ internal_properties : BQAAAAUAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

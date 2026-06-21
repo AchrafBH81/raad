@@ -1,0 +1,227 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : CLBase
+ major_version : 25
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x145ab9440033b105
+ internal_properties : BQAAAAUAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1+
+      CLBase est une Classe
+      	
+      	m_connexion					est une connexion
+      	m_FichierIni				est CLIniFichier dynamique 
+      	m_log						est CLlog dynamique 
+      	m_Table						est un tableau associatif de dynamique CLRecord
+      fin
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1466688330374885637
+     type_code : 27
+     code : |1+
+      procédure Constructeur()
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1466688330374951173
+     type_code : 28
+     code : |1+
+      procédure Destructeur()
+      
+     type : 655360
+   -
+     name : Connexion
+     procedure_id : 1466988909366778407
+     type_code : 12
+     code : |1-
+      
+      procédure Connexion()
+      
+      si pas HOuvreConnexion(m_connexion) ALORS
+      	m_log.LogErreur("impossible de se connecter au serveur de base de données")
+      	renvoyer faux
+      FIN
+      
+      renvoyer vrai
+     type : 458752
+   -
+     name : ChargeConfiguration
+     procedure_id : 1466989008151115314
+     type_code : 12
+     code : |1-
+      
+      procédure ChargeConfiguration()
+      
+      m_connexion..Provider			= m_FichierIni.LireEcrireClé("BDD","Provider","WinDevClientServeurHF")
+      m_connexion..Serveur			= m_FichierIni.LireEcrireClé("BDD","Serveur","127.0.0.1")
+      m_connexion..BaseDeDonnées		= m_FichierIni.LireEcrireClé("BDD","BaseDeDonnées","Test")
+      m_connexion..Utilisateur		= m_FichierIni.LireEcrireClé("BDD","Utilisateur","admin")
+      m_connexion..MotDePasse			= m_FichierIni.LireEcrireClé("BDD","MotDePasse","")
+     type : 458752
+   -
+     name : Initialisation
+     procedure_id : 1467412083909462928
+     type_code : 12
+     code : |1+
+      
+      procédure Initialisation(LOCAL A_fichierini est CLIniFichier dynamique , local A_log  est CLlog dynamique)
+      
+      m_FichierIni	= A_fichierini
+      m_log			=  A_log
+      
+      local
+      	l_NomTbale est chaine 
+      
+      ChargeConfiguration()
+      
+      si Connexion() ALORS
+      	sListetable est chaine = HListeFichier(m_connexion)
+      	
+      	pour tout CHAÎNE a_table de  sListetable SÉPARÉE PAR RC
+      		// on déclare les tables de la base 
+      		
+      		l_NomTbale = Remplace(a_table,[".FIC",".fic"],"")
+      		
+      		HDéclareExterne(a_table,l_NomTbale,m_connexion)
+      		l_table est dynamique clrecord = new clrecord 
+      		l_table.init(l_NomTbale)
+      		l_table.m_base <= objet
+      	
+      		m_table[l_NomTbale] =new clrecord
+      		m_Table[l_NomTbale] = l_table
+      		
+      		
+      	FIN
+      	
+      FIN
+      
+      Déconnexion()
+     type : 458752
+   -
+     name : Déconnexion
+     procedure_id : 1467703574750733481
+     type_code : 12
+     code : |1+
+      
+      procédure Déconnexion()
+      
+      HFermeConnexion(m_connexion)
+     type : 458752
+   -
+     name : ExecuteSql
+     procedure_id : 1467723666608162313
+     type_code : 12
+     code : |1-
+      
+      procédure ExecuteSql(local a_CodeSql)
+      Local 
+      	l_res		est un tableau de Enregistrement
+      	l_HttpReqSQL		est une source de données                         	
+      	
+      	
+      Connexion()
+      
+      HExécuteRequêteSQL(l_HttpReqSQL,m_connexion,hRequêteSansCorrection,a_CodeSql)
+      
+      // Sérialisation de l'élément
+      FichierVersTableau(l_res,l_HttpReqSQL)
+      
+      Déconnexion()
+      
+      renvoyer l_res
+     type : 458752
+   -
+     name : GetRecord
+     procedure_id : 1473768064283517472
+     type_code : 12
+     code : |1+
+      procédure publique  GetRecord(l_record est CLRecord )
+      
+      LOCAL
+      m_ReqSQL est une source de données
+      m_ResEnregistrement est un Enregistrement 
+      	
+      Connexion()
+      
+      si l_record.m_valkey <> "" ALORS
+      	HExécuteRequêteSQL(m_ReqSQL,m_connexion,hRequêteSansCorrection,ChaîneConstruit("SELECT * FROM %1 where %2" , l_record.m_table, l_record.m_key + " = " + l_record.m_valkey ))
+      	
+      sinon
+      	HExécuteRequêteSQL(m_ReqSQL,m_connexion,hRequêteSansCorrection,ChaîneConstruit("SELECT * FROM %1 where %2" , l_record.m_table, l_record.m_condition ))	
+      FIN
+      
+      // lire le premier enregistrement  
+      HLitPremier(m_ReqSQL)
+      FichierVersMémoire(m_ResEnregistrement,m_ReqSQL)
+      
+      Sérialise(m_ResEnregistrement,l_record.m_json,psdJSON)
+      
+      
+      
+      CAS ERREUR:
+      l_record.m_erreur = ErreurInfo()
+      
+      
+      CAS EXCEPTION:
+      l_record.m_erreur = ExceptionInfo()
+      
+      
+      fin :
+       Déconnexion()
+     type : 458752
+   -
+     name : GetTabRecords
+     procedure_id : 1473770112983000932
+     type_code : 12
+     code : |1+
+      procédure GetTabRecords() 
+      
+      LOCAL
+      l_TabEnregistrement		est un tableau de Enregistrements  
+      m_ReqSQL est une source de données
+      	
+      Connexion()
+      	
+      HExécuteRequêteSQL(m_ReqSQL,m_connexion,hRequêteSansCorrection,"SELECT * FROM WBLignePieces where WBLignePieces.IDwb_piece = 110905")
+      FichierVersTableau(l_TabEnregistrement,m_ReqSQL)
+      
+      
+      Déconnexion()
+      
+     type : 458752
+   -
+     name : CreerNouveauRecord
+     procedure_id : 1887690151532548473
+     type_code : 12
+     code : |1+
+      procédure CreerNouveauRecord(LOCAL a_NomTable est une chaîne) : CLRecord 
+      
+      // On alloue une NOUVELLE instance en mémoire pour chaque requête
+      l_nouveauRecord est un CLRecord dynamique = allouer un CLRecord
+      l_nouveauRecord.init(a_NomTable)
+      l_nouveauRecord.m_base <= Objet // On passe la référence de la base
+      
+      RENVOYER l_nouveauRecord
+      
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : BQAAAAUAAAA6ih3UbgNXHwTtiPSFUEj+2fi/m7v4QV2rqidAupM=
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x145ab932002d6a48
+  internal_properties : BQAAAAUAAAAnMYFQ1bL/vz9ehh7L22SNNSlIzGTOI8h5F/WtgDNP
+custom_note :
+ internal_properties : BQAAAAUAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

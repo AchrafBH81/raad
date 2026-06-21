@@ -1,0 +1,225 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : CLServeurSocket
+ major_version : 25
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x1485af350105ddd4
+ internal_properties : BQAAAAUAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1+
+      CLServeurSocket est une Classe
+      	m_Proc_CallBack			est une procédure
+      Prive
+      	m_PortSOcket		est un entier	= 5010
+      	m_NomSocketEcoute	est une chaine
+      	m_sNomCanal			est une chaîne
+      	m_CanalSocket		est Dynamic clsocketcanal
+      fin
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1478780694846496212
+     type_code : 27
+     code : |1+
+      procédure Constructeur()
+      
+      m_CanalSocket = new clsocketcanal
+      m_CanalSocket.init()
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1478780694846561748
+     type_code : 28
+     code : |1+
+      procédure Destructeur()
+      
+      SocketFerme(m_NomSocketEcoute)
+      
+     type : 655360
+   -
+     name : AttenteConnexion
+     procedure_id : 1478780694846627284
+     type_code : 12
+     code : |1-
+      
+      procédure  AttenteConnexion() <métier>
+      
+      SI SocketAttendConnexion(m_NomSocketEcoute) ALORS
+      	
+      	// Nouvelle demande de connexion
+      	// Dans cet exemple, on accepte les connexions
+      	m_sNomCanal = SocketAccepte(m_NomSocketEcoute)
+      	
+      	// Vérification de l'opération d'acceptation
+      	// On lance un thread pour gérer cette connexion
+      	//sNomThread = sNomCanal
+      	SI m_sNomCanal<>"" ALORS GestionConnexion(m_sNomCanal)
+      		
+      FIN	
+     type : 458752
+   -
+     name : GestionConnexion
+     internal_properties : BQAAAAUAAABqmWvBafCASa0jyDBaFgsD7FKfsAM/xKex7Lx4BSM4QBBfG6XXTIgHF+4bsU5osJPV4st+f9p/jyOdqfSwWRdJB4t5gEEo5ZMaGflQHvqMEQvC085KLnobXVJHReEi3zTDo8yAvyv7OC8yQa8wuPKgu/mvrQQKFggLiFKaoiblZg==
+     procedure_id : 1478780694846692820
+     type_code : 12
+     code : |1+
+      // --------------------------------------------------------------------------------------
+      // Procédure automatique : Exécution dans un thread dédié
+      // --------------------------------------------------------------------------------------
+      // Cette procédure est lancée automatiquement en mode Thread par WINDEV à chaque 
+      // nouvelle connexion client (via l'appel ou les propriétés de la procédure).
+      // 
+      // SÉCURITÉ CONCURRENTIELLE (THREAD-SAFE) :
+      // Elle s'exécute avec une **Copie indépendante du contexte HFSQL**. 
+      // Chaque thread possède ses propres pointeurs de fichiers, curseurs et requêtes.
+      // Cela garantit que les accès à la base de données (HLit, HExécuteRequêteSQL, etc.) 
+      // ne se mélangent jamais avec ceux des autres requêtes HTTP traitées simultanément.
+      // ---
+      
+      procédure privée GestionConnexion(local sNomConnexion est chaine )
+      
+      
+      SectionCritiqueDébut(sNomConnexion)
+      
+      CanalSocket est un CLSocketCanal  <= m_CanalSocket
+      
+      
+      quand Exception dans
+      	
+      	CanalSocket.m_MessageSocketRecu	= SocketLit(sNomConnexion,Faux)
+      	si CanalSocket.m_MessageSocketRecu <> "" alors 
+      		CanalSocket.m_NomSocket		= sNomConnexion
+      		CanalSocket.m_AdresseClient	= SocketClientInfo(sNomConnexion,SocketAdresse)
+      		
+      		m_Proc_CallBack(CanalSocket)
+      		
+      		SocketEcrit(sNomConnexion,CanalSocket.m_MessageSocketReponse)
+      	fin
+      	
+      	
+      	// Fermeture de la socket
+      	SocketFerme(sNomConnexion)
+      	SectionCritiqueFin(sNomConnexion)
+      	
+      FAIRE
+      	
+      	SocketFerme(sNomConnexion)
+      	SectionCritiqueFin(sNomConnexion)
+      	
+      FIN
+      
+      
+      		
+     type : 458752
+   -
+     name : Demarre
+     procedure_id : 1478780694846758356
+     type_code : 12
+     code : |1+
+      
+      
+      procédure Demarre()
+      
+      
+      SocketCrée(m_NomSocketEcoute,m_PortSOcket)
+      
+      SocketChangeModeTransmission(m_NomSocketEcoute,SocketSansMarqueurFin)
+      
+      _LancerServeurHttpsEntrantAsync()
+      
+      
+      
+      SI ErreurDétectée ALORS
+      	//Erreur(<§$0001§> +m_PortSocket,ErreurINfo())
+      	FinProgramme()
+      FIN
+      
+      
+     type : 458752
+   -
+     name : Arret
+     procedure_id : 1537883821397867347
+     type_code : 12
+     code : |1-
+      procédure Arret()
+      
+      SocketFerme(m_NomSocketEcoute)
+     type : 458752
+   -
+     name : _LancerServeurHttpsEntrantAsync
+     procedure_id : 1751625140919215284
+     type_code : 12
+     code : |1+
+      procédure privée _LancerServeurHttpsEntrantAsync()
+      
+      LancerServeurHttpsEntrantAsync(443,8080,fRepExe+["/"]+"systeme/SSl/cert.pem",fRepExe+["/"]+"systeme/SSl/key.pem")
+     type : 458752
+  properties :
+   -
+     name : p_NomSocketEcoute
+     identifier : 0x1485af350106ddd4
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         procédure publique p_NomSocketEcoute(Valeur)
+         
+         m_NomSocketEcoute = Valeur
+        type : 2031616
+     template_refs : []
+   -
+     name : P_PortSocket
+     identifier : 0x1485b3d20154e4b2
+     type_code : 103
+     p_codes :
+      -
+        code : |1+
+         procédure publique P_PortSocket() :entier
+         
+         renvoyer m_PortSOcket
+         
+        type : 1966080
+      -
+        code : |1-
+         procédure publique P_PortSocket(a_Valeur est un entier)
+         
+         m_PortSOcket = a_Valeur
+        type : 2031616
+     template_refs : []
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : BQAAAAUAAAA6ih3UbgNXHwTtiPSFUEj+2fi/m7v4QV2rqidAupM=
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x14561cd30007ef68
+  internal_properties : BQAAAAUAAAAnMYFQ1bL/vz9ehh7L22SNNSlIzGTOI8h5F/WtgDNP
+  strings :
+   -
+     text :
+      fr-FR : "Impossible de mettre en place la socket d'écoute sur le port :"
+     index : 0
+   -
+     text :
+      fr-FR : "Impossible de mettre en place la socket d'écoute sur le port :"
+     index : 1
+   -
+     text :
+      fr-FR : "Impossible de mettre en place la socket d'écoute sur le port :"
+     index : 2
+   -
+     text :
+      fr-FR : "Impossible de mettre en place la socket d'écoute sur le port :"
+     index : 3
+custom_note :
+ internal_properties : BQAAAAUAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

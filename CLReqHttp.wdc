@@ -1,0 +1,279 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : CLReqHttp
+ major_version : 25
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x188774a8001f82d8
+ internal_properties : BQAAAAUAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1+
+      CLReqHttp est une Classe
+      
+      	m_UrlRecu				est une chaîne
+      	m_PointDentre			est une chaine 		
+      	m_CorpReq				est une chaine 
+      	m_HeaderReq				est une chaine 
+      	m_TypeReq				Est une chaîne
+      	m_PositionUrl			est un entier
+      	m_extension				est une chaine 
+      	m_Gzip					est un booléen
+      	m_ContenuBuffer			est un buffer
+      	m_CodeReponse			est un chaine
+      	m_Parametres			est un tableau associatif de chaînes
+      	m_TabExtensions			est un tableau associatif de chaînes
+      	m_TabReponse			est un tableau associatif de chaînes
+      	m_RepEXe                est une chaîne
+      fin
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1767509643671667416
+     type_code : 27
+     code : |1+
+      procédure Constructeur()
+      
+      m_RepEXe = fRepExe()+["\"]
+      
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1767509643671732952
+     type_code : 28
+     code : |1+
+      procédure Destructeur()
+      
+     type : 655360
+   -
+     name : _GetParam
+     procedure_id : 1767509643671798488
+     type_code : 12
+     code : |1-
+      procédure privée _GetParam()
+      
+      Indpos	est un entier
+      
+      
+      //Récupérer les paramètres passés dans l'URL
+      UrlPram	est chaine	= m_UrlRecu[[ Position(m_UrlRecu,"?")+1 À]]
+      POUR TOUTE CHAÎNE souschaine DE UrlPram SÉPARÉE PAR "&"
+      	Indpos = Position(souschaine,"=")
+      	SI Indpos ALORS
+      		m_Parametres[SansEspace(souschaine[[ À Indpos-1]])] = SansEspace(souschaine[[Indpos+1 À ]])
+      	FIN	
+      FIN
+      
+      
+      //Récupérer les paramètres passés dans l'en-tête.
+      POUR TOUTE CHAÎNE souschaine DE m_HeaderReq SÉPARÉE PAR rc
+      	Indpos = Position(souschaine,":")	
+      	SI Indpos ALORS
+      		m_Parametres[SansEspace(souschaine[[ À Indpos-1]])] = SansEspace(souschaine[[Indpos+1 À ]])	
+      	FIN
+      FIN
+     type : 458752
+   -
+     name : _GenerateHeaderMessage
+     procedure_id : 1767509643671864024
+     type_code : 12
+     code : |1+
+      procédure privée _GenerateHeaderMessage()<métier> : chaîne
+      
+      //génération de l'en-tête de la réponse HTTP
+      l_valeur est une chaîne=[
+      HTTP/1.1 %1
+      Accept-Ranges:bytes
+      Content-Length:%2
+      Server:RaaD 1.2
+      Date:%3
+      Connection:Keep-Alive
+      ]
+      
+      l_DateServer est une dateheure = DateHeureLocaleVersUTC(DateHeureSys())
+      
+      l_valeur = ChaîneConstruit(l_valeur,m_CodeReponse,Taille(m_ContenuBuffer), DateVersChaîne(l_DateServer.PartieDate,"JJ MMM AAAA" )+ " "+HeureVersChaîne(l_DateServer.PartieHeure,"HH:MM:SS")+" GMT")
+      l_valeur += [RC] + m_TabExtensions[m_Extension]
+      
+      SI m_Gzip ALORS  l_valeur += [RC] + "Content-Encoding:Gzip"
+      
+      
+      RENVOYER l_valeur
+      
+     type : 458752
+   -
+     name : GetFile
+     internal_properties : BQAAAAUAAAA1qXcd/ACZ9xsYiCAUwNfRlQK/Pl7Hh8RtRnmI3fKJTl62Rxca7Wsyi2/iRuY2uT3vOTWo+1zFk+g7AP9843TYarHVG1VCioAkYIvYeDSnRCYmrPZldS/iTtAoYPOV+czln6ZavIgtxDZQztOCEc4Lf1Ymr0y8AheOtsA4q+H5pFDVa9FNF3axRPzVpVAw7kagpA==
+     procedure_id : 1767509643671929560
+     type_code : 12
+     code : |1+
+      procédure publique  GetFile() <métier>
+      
+      m_CodeReponse = "200 OK"
+      
+      
+      SI m_UrlRecu = "" ALORS
+      	m_UrlRecu	= "RAAD\index.html"
+      	m_Extension	= ".html"
+      SINON
+      	SI Position(m_UrlRecu,"?") > 1 ALORS  m_UrlRecu = m_UrlRecu[ À Position(m_UrlRecu,"?")-1]
+      	m_UrlRecu	= Remplace(m_UrlRecu ,"/","\")
+      	m_Extension	= m_UrlRecu[Position(m_UrlRecu,".",0,DepuisFin) À ]
+      FIN
+      
+      
+      QUAND EXCEPTION DANS 
+      	
+      	selon m_extension
+      		cas ".php"
+      		
+      		m_ContenuBuffer = ExecuterPhp("D:\Mes Projets\RaaD\Exe\Bin\Php\php-7.4\php-cgi.exe",m_RepEXe+"WWW\"+m_UrlRecu)
+      		
+      		
+      		AUTRE CAS
+      		m_ContenuBuffer   = fChargeBuffer(fRepExe()+["\"]+"WWW\"+m_UrlRecu)	
+      	FIN
+      	
+      	SI m_ContenuBuffer ="" ALORS 
+      		// Code 404 si on ne trouve pas l'élément 
+      		m_CodeReponse	= 404
+      		m_ContenuBuffer	= m_TabReponse[404]
+      	FIN
+      	
+      	SI m_Extension DANS (".html",".css",".js",".txt",".xml",".json",".csv",".php",".asp",".jsp",".woff",".svg",".woff2",".ttf",".eot","hml") ALORS
+      		m_ContenuBuffer	= Compresse(m_ContenuBuffer,compresseGZIP)
+      		m_Gzip			= Vrai
+      	FIN
+      	
+      FAIRE
+      	// Code 500 
+      	m_CodeReponse	= 500
+      	m_ContenuBuffer	= m_TabReponse[500]
+      	
+      FIN
+     type : 458752
+   -
+     name : GetMessage
+     procedure_id : 1767509643671995096
+     type_code : 12
+     code : |1+
+      procédure GetMessage( a_message est chaine)
+      
+      m_HeaderReq		= Décode(a_message[[ À Position(a_message,RC+RC)-1]],encodeURLVersUTF8)
+      m_CorpReq		= Décode(a_message[[Position(a_message,RC+RC)+4 À ]],encodeURLVersUTF8)
+      m_PositionUrl	= Position(m_HeaderReq,"/")
+      m_TypeReq		= SansEspace(m_HeaderReq[1 À m_PositionUrl-1])
+      m_UrlRecu		= SansEspace(m_HeaderReq[[m_PositionUrl+1 À Position(m_HeaderReq,"HTTP",m_PositionUrl)-1]])
+      m_PointDentre	= Minuscule( m_UrlRecu[[  À Position(m_UrlRecu,"/")-1 ]])
+      
+      _GetParam()
+     type : 458752
+   -
+     name : GetReponse
+     procedure_id : 1767509643672060632
+     type_code : 12
+     code : |1+
+      procédure GetReponse():buffer
+      
+      renvoyer _GenerateHeaderMessage() + RC + RC + m_ContenuBuffer
+      
+     type : 458752
+   -
+     name : _GetExtensions
+     procedure_id : 1767509643672126168
+     type_code : 12
+     code : |1+
+      procédure privée _GetExtensions() <métier>
+      
+      //Nous allons initialiser les extensions avec leurs paramètres respectifs.
+      a_param est une chaîne = [
+      Content-Type:%1
+      Cache-Control:%2
+      ]
+      a_listeextention est une chaîne = fChargeBuffer(m_RepEXe+"Systeme\Externe\extensions.conf")
+      TableauSupprimeTout(m_TabExtensions)
+      
+      pour TOUTE CHAÎNE a_extension DE a_listeextention SÉPARÉE PAR RC
+      
+      	m_TabExtensions[a_extension[[ A Position(a_extension,";")-1]]] = ChaîneConstruit(a_param,a_extension[[Position(a_extension,";")+1 A Position(a_extension,";",0,depuisfin)-1]] , a_extension[[Position(a_extension,";",0,depuisfin)+1 A ]])
+      	
+      FIN
+      	
+      
+      
+      
+      
+     type : 458752
+   -
+     name : _InitTableReponse
+     procedure_id : 1767509643672191704
+     type_code : 12
+     code : |1+
+      procédure privée _InitTableReponse() <métier>
+      
+      // Code 200
+      m_TabReponse[200]=""
+      
+      // Code 404
+      m_TabReponse[404]=[
+      <html>
+      <body>
+        <h1>Erreur 404 - Page introuvable</h1>
+        <p>Désolé, la page que vous recherchez est introuvable.</p>
+      </body>
+      </html>
+      ]
+      
+      //Code 401
+      m_TabReponse[401]=[
+      <html>
+      <body>
+        <h1>Erreur 401 - Non autorisé</h1>
+        <p>Désolé, vous n'êtes pas autorisé à accéder à cette page.</p>
+      </body>
+      </html>
+      ]
+      
+      // Code 500
+      m_TabReponse[500]=[
+      <html>
+      <body>
+        <h1>Erreur 500 - Erreur interne du serveur</h1>
+        <p>Désolé, une erreur interne du serveur s'est produite.</p>
+      </body>
+      </html>
+      ]
+      
+     type : 458752
+   -
+     name : init
+     procedure_id : 1767509643672257240
+     type_code : 12
+     code : |1-
+      procédure init()
+      
+      _GetExtensions()
+      _InitTableReponse()
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : BQAAAAUAAAA6ih3UbgNXHwTtiPSFUEj+2fi/m7v4QV2rqidAupM=
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x148358a70110b931
+  internal_properties : BQAAAAUAAAAnMYFQ1bL/vz9ehh7L22SNNSlIzGTOI8h5F/WtgDNP
+  strings :
+   -
+     text : {}
+     index : 0
+custom_note :
+ internal_properties : BQAAAAUAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

@@ -1,0 +1,125 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : CLIniFichier
+ major_version : 25
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x145bcaee0047bb66
+ internal_properties : BQAAAAUAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1+
+      CLIniFichier est une Classe
+        
+        protege
+        	
+        m_sNomDeFichier est une chaîne 
+        
+        m_clog est CLlog dynamique
+        
+      fin
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1466989227195022182
+     type_code : 27
+     code : |1-
+      procédure Constructeur()
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1466989227195087718
+     type_code : 28
+     code : |1+
+      procédure Destructeur()
+      
+     type : 655360
+   -
+     name : LireClé
+     procedure_id : 1466989892915042292
+     type_code : 12
+     code : |1+
+      
+      procédure LireClé()
+      
+     type : 458752
+   -
+     name : EcrireCLé
+     procedure_id : 1466989931569822757
+     type_code : 12
+     code : |1+
+      
+      procédure EcrireCLé()
+      
+     type : 458752
+   -
+     name : LireEcrireClé
+     procedure_id : 1467389393596149401
+     type_code : 12
+     code : |1-
+      
+      procédure LireEcrireClé(local a_section est chaine ,local  a_clé est chaine, local a_valeurdefaut est chaine )
+      
+      SI PAS fFichierExiste(m_sNomDeFichier) ALORS 
+      	m_clog.LogErreur("Fichier INI inexistant. ("+m_sNomDeFichier+")")
+      	RENVOYER ""
+      SINON
+      	RETOUR = INILit(a_section, a_clé, "-" + "No", m_sNomDeFichier)
+      	SI RETOUR = "-" + "No" ALORS
+      		SI PAS INIEcrit (a_section, a_clé, a_valeurdefaut, m_sNomDeFichier) ALORS
+      			m_clog.LogErreur( "Impossible d'écrire dans le fichier INI. ("+m_sNomDeFichier+")")
+      			RENVOYER ""
+      		SINON
+      			RENVOYER a_valeurdefaut
+      		FIN
+      	FIN
+      FIN
+     type : 458752
+   -
+     name : Initialisation
+     procedure_id : 1467988197935405595
+     type_code : 12
+     code : |1+
+      // Résumé : <indiquez ici ce que fait la procédure>
+      // Syntaxe :
+      // Initialisation ()
+      //
+      // Paramètres :
+      //	Aucun
+      // Valeur de retour :
+      // 	Aucune
+      //
+      // Exemple :
+      // Indiquez ici un exemple d'utilisation.
+      //
+      procédure Initialisation(LOCAL A_nomFichier est une chaîne , local A_clog est un CLlog dynamique )
+      
+      m_sNomDeFichier	= A_nomFichier
+      m_clog			= A_clog
+      
+      SI PAS fFichierExiste(m_sNomDeFichier) ALORS 
+      	
+      	SI PAS fCrée(m_sNomDeFichier) ALORS
+      		m_clog.LogErreur("Impossible de crée le fichier : " +m_sNomDeFichier)
+      	FIN
+      FIN
+      
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : BQAAAAUAAAA6ih3UbgNXHwTtiPSFUEj+2fi/m7v4QV2rqidAupM=
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x145bcade00417c1b
+  internal_properties : BQAAAAUAAAAnMYFQ1bL/vz9ehh7L22SNNSlIzGTOI8h5F/WtgDNP
+custom_note :
+ internal_properties : BQAAAAUAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

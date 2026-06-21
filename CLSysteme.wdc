@@ -1,0 +1,105 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : CLSysteme
+ major_version : 25
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x1477a2f6010e8210
+ internal_properties : BQAAAAUAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1+
+      MEMORYSTATUSEX est une structure
+      	dwLength				est un entier sur 4 octets	//Type C : DWORD
+      	dwMemoryLoad			est un entier sur 4 octets	//Type C : DWORD
+      	ullTotalPhys			est un entier sur 8 octets	//Type DWORDLONG
+      	ullAvailPhys			est un entier sur 8 octets	//Type DWORDLONG
+      	ullTotalPageFile		est un entier sur 8 octets	//Type DWORDLONG
+      	ullAvailPageFile		est un entier sur 8 octets	//Type DWORDLONG
+      	ullTotalVirtual			est un entier sur 8 octets	//Type DWORDLONG
+      	ullAvailVirtual			est un entier sur 8 octets	//Type DWORDLONG
+      	ullAvailExtendedVirtual	est un entier sur 8 octets	//Type DWORDLONG
+      FIN
+      
+      CLSysteme est une Classe
+      	lstStatex	est un MEMORYSTATUSEX
+      	lbResultat est un entier
+      	MemoirePhysiqueTotale,MemoirePhysiqueDisponible,...
+      	MemoireUtilisee,MemoirePagineeTotale,MemoirePaginéeLibre,...
+      	MemoireVirtuelleTotale,MemoireVirtuelleLibre,...
+      	MemoireVirtuelleEtendueLibre sont des entiers
+      	nOctets est entier = 1024 * 1024
+      	
+      	
+      fin
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1474826580450574864
+     type_code : 27
+     code : |1+
+      procédure Constructeur()
+      
+      lstStatex:dwLength	= Dimension(lstStatex)
+      _LiveMemoire()
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1474826580450640400
+     type_code : 28
+     code : |1+
+      procédure Destructeur()
+      
+      
+     type : 655360
+   -
+     name : _LiveMemoire
+     procedure_id : 1475442770818740253
+     type_code : 12
+     code : |1+
+      
+      procédure publique _LiveMemoire()
+      
+      lbResultat						= AppelDLL32("KERNEL32.DLL", "GlobalMemoryStatusEx", &lstStatex)
+      MemoireUtilisee					= lstStatex:dwMemoryLoad
+      MemoirePhysiqueTotale			= lstStatex:ullTotalPhys / nOctets
+      MemoirePhysiqueDisponible		= lstStatex:ullAvailPhys / nOctets
+      MemoirePagineeTotale			= lstStatex:ullTotalPageFile / nOctets
+      MemoirePaginéeLibre				= lstStatex:ullAvailPageFile / nOctets
+      MemoireVirtuelleTotale			= lstStatex:ullTotalVirtual / nOctets
+      MemoireVirtuelleLibre			= lstStatex:ullAvailVirtual / nOctets
+      MemoireVirtuelleEtendueLibre	= lstStatex:ullAvailExtendedVirtual / nOctets
+      
+      Multitâche(-1)
+     type : 458752
+  properties :
+   -
+     name : P_Memoire
+     identifier : 0x1479daf9011f5663
+     type_code : 103
+     p_codes :
+      -
+        code : |1+
+         procédure publique P_Memoire()
+         
+         renvoyer MemoireUtilisee
+        type : 1966080
+     template_refs : []
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : BQAAAAUAAAA6ih3UbgNXHwTtiPSFUEj+2fi/m7v4QV2rqidAupM=
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x1477a2ef010b6773
+  internal_properties : BQAAAAUAAAAnMYFQ1bL/vz9ehh7L22SNNSlIzGTOI8h5F/WtgDNP
+custom_note :
+ internal_properties : BQAAAAUAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

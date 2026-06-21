@@ -1,0 +1,238 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : RAAD
+ major_version : 25
+ minor_version : 0
+ type : 7
+ description : ""
+ subtype : 0
+procedure_set :
+ identifier : 0x15d8f360010a5772
+ internal_properties : BQAAAAUAAABGLu41kG7fjQV3iS4F72qmnKaNh5694reolNKIW0iw
+ code_elements :
+  type_code : 31
+  p_codes : []
+  procedures :
+   -
+     name : ExecuterPhp
+     procedure_id : 1574275684900761080
+     type_code : 15
+     code : |1+
+      using System;
+      using System.Diagnostics;
+      using System.IO;
+      using System.Text; 
+      
+      public static string ExecuterPhp(string phpCgiPath, string phpFilePath)
+      {
+      try
+      {
+      string argument = "\"" + phpFilePath + "\"";
+      
+      ProcessStartInfo startInfo = new ProcessStartInfo("\"" + phpCgiPath + "\"")
+      {
+      Arguments = argument,
+      UseShellExecute = false,
+      RedirectStandardOutput = true,
+      CreateNoWindow = true
+      };
+      
+      using (Process process = Process.Start(startInfo))
+      {
+      using (StreamReader reader = process.StandardOutput)
+      {
+      StringBuilder output = new StringBuilder();
+      bool contentStarted = false;
+      
+      while (!reader.EndOfStream)
+      {
+      string line = reader.ReadLine();
+      
+      // Vérifie si le contenu HTML commence
+      if (string.IsNullOrWhiteSpace(line))
+      {
+      contentStarted = true;
+      continue;
+      }
+      
+      if (contentStarted)
+      {
+      output.AppendLine(line);
+      }
+      }
+      
+      process.WaitForExit();
+      
+      return output.ToString();
+      }
+      }
+      }
+      catch (Exception ex)
+      {
+      return "Erreur lors de l'exécution du script PHP : " + ex.Message;
+      }
+      }
+     language : "C#"
+     type : 458752
+   -
+     name : LancerServeurHttpsEntrantAsync
+     procedure_id : 1751522065999000423
+     type_code : 15
+     code : |1-
+      using System;
+      using System.IO;
+      using System.Net;
+      using System.Net.Sockets;
+      using System.Net.Security;
+      using System.Security.Cryptography.X509Certificates;
+      using System.Security.Cryptography;
+      using System.Threading.Tasks;
+      using Org.BouncyCastle.Crypto;
+      using Org.BouncyCastle.OpenSsl;
+      using Org.BouncyCastle.Security;
+      using Org.BouncyCastle.Pkcs;
+      using Org.BouncyCastle.X509;
+      
+      public static async Task LancerServeurHttpsEntrantAsync(
+      int portHttps,
+      int portHttpDestination,
+      string cheminCertPem,
+      string cheminClePem
+      )
+      {
+      var certificat = ChargerCertificatDepuisPem(cheminCertPem, cheminClePem);
+      var listener = new TcpListener(IPAddress.Any, portHttps);
+      listener.Start();
+      
+      Console.WriteLine("🔐 Serveur HTTPS démarré sur le port " + portHttps + ", redirige vers HTTP sur le port " + portHttpDestination + "...");
+      
+      while (true)
+      {
+      var client = await listener.AcceptTcpClientAsync();
+      Task.Run(() => GérerClientSslAsync(client, portHttpDestination, certificat));
+      }
+      }
+      
+      private static async Task GérerClientSslAsync(TcpClient client, int portHttpDestination, X509Certificate2 certificat)
+      {
+      using (client)
+      using (var destinationClient = new TcpClient("localhost", portHttpDestination))
+      {
+      var sslStream = new SslStream(client.GetStream(), false);
+      try
+      {
+      await sslStream.AuthenticateAsServerAsync(
+      certificat,
+      clientCertificateRequired: false,
+      enabledSslProtocols: System.Security.Authentication.SslProtocols.Tls12,
+      checkCertificateRevocation: false
+      );
+      }
+      catch (Exception ex)
+      {
+      Console.WriteLine("❌ Erreur SSL lors de la connexion client : " + ex.Message);
+      return;
+      }
+      
+      var destinationStream = destinationClient.GetStream();
+      
+      try
+      {
+      Console.WriteLine("✅ Connexion SSL acceptée → redirection HTTP en cours...");
+      
+      var t1 = sslStream.CopyToAsync(destinationStream);
+      var t2 = destinationStream.CopyToAsync(sslStream);
+      
+      await Task.WhenAny(t1, t2);
+      }
+      catch (Exception ex)
+      {
+      Console.WriteLine("❌ Erreur de redirection des flux : " + ex.Message);
+      }
+      }
+      }
+      
+      private static X509Certificate2 ChargerCertificatDepuisPem(string cheminCertPem, string cheminClePem)
+      {
+      Org.BouncyCastle.X509.X509Certificate bcCert;
+      using (var certReader = File.OpenText(cheminCertPem))
+      {
+      var pemReader = new PemReader(certReader);
+      bcCert = (Org.BouncyCastle.X509.X509Certificate)pemReader.ReadObject();
+      }
+      
+      AsymmetricKeyParameter key;
+      using (var keyReader = File.OpenText(cheminClePem))
+      {
+      var pemReader = new PemReader(keyReader);
+      object keyObject = pemReader.ReadObject();
+      
+      if (keyObject is AsymmetricCipherKeyPair)
+      key = ((AsymmetricCipherKeyPair)keyObject).Private;
+      else if (keyObject is AsymmetricKeyParameter)
+      key = (AsymmetricKeyParameter)keyObject;
+      else
+      throw new Exception("Format de clé non reconnu.");
+      }
+      
+      var storeBuilder = new Pkcs12StoreBuilder();
+      var store = storeBuilder.Build();
+      
+      var certEntry = new X509CertificateEntry(bcCert);
+      string alias = "cert-localhost";
+      store.SetCertificateEntry(alias, certEntry);
+      store.SetKeyEntry(alias, new AsymmetricKeyEntry(key), new[] { certEntry });
+      
+      using (var ms = new MemoryStream())
+      {
+      store.Save(ms, new char[0], new SecureRandom());
+      return new X509Certificate2(ms.ToArray(), "", X509KeyStorageFlags.Exportable);
+      }
+      }
+     language : "C#"
+     type : 458752
+   -
+     name : MemoireDisponibleMo
+     procedure_id : 1752058193885417704
+     type_code : 15
+     code : |1+
+      using System;
+      using Microsoft.VisualBasic.Devices;
+      
+      public static long MemoireDisponibleMo()
+      {
+      ComputerInfo info = new ComputerInfo();
+      ulong memLibre = info.AvailablePhysicalMemory;
+      return (long)(memLibre / 1024 / 1024);
+      }
+     language : "C#"
+     type : 458752
+   -
+     name : MemoireTotaleMo
+     procedure_id : 1752059877514628589
+     type_code : 15
+     code : |1+
+      using System;
+      using Microsoft.VisualBasic.Devices;
+      
+      
+      public static long MemoireTotaleMo()
+      {
+      ComputerInfo info = new ComputerInfo();
+      ulong memTotale = info.TotalPhysicalMemory;
+      return (long)(memTotale / 1024 / 1024);
+      }
+     language : "C#"
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : BQAAAAUAAAA6ih3UbgNXHwTtiPSFUEj+2fi/m7v4QV2rqidAupM=
+  original_name : ProcéduresGlobales1
+resources :
+ string_res :
+  identifier : 0x15d8f35c01084aa1
+  internal_properties : BQAAAAUAAAAnMYFQ1bL/vz9ehh7L22SNNSlIzGTOI8h5F/WtgDNP
+custom_note :
+ internal_properties : BQAAAAUAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ
