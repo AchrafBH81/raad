@@ -1,0 +1,112 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : CLConfiguration
+ major_version : 25
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x1a3872540054a7a6
+ internal_properties : BQAAAAUAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1+
+      CLConfiguration est une Classe
+      
+      PRIVÉ
+      	m_sNomDeFichier		est une chaîne
+      	m_log				est CLlog dynamique
+      	// Stockage RAM ultra-rapide des paramètres (Format : "Section.Clé")
+      	m_Parametres		est un tableau associatif de chaînes 
+      
+      fin
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1889385748790355878
+     type_code : 27
+     code : |1+
+      procédure Constructeur()
+      
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1889385748790421414
+     type_code : 28
+     code : |1+
+      procédure Destructeur()
+      
+     type : 655360
+   -
+     name : Initialisation
+     procedure_id : 1889386096682852937
+     type_code : 12
+     code : |1-
+      procédure publique Initialisation(LOCAL a_nomFichier est une chaîne, LOCAL a_log est CLlog dynamique)
+      m_sNomDeFichier	= a_nomFichier
+      m_log			= a_log
+      
+      SI PAS fFichierExiste(m_sNomDeFichier) ALORS
+      	m_log.LogErreur("Fichier de configuration introuvable : " + m_sNomDeFichier)
+      	RETOUR
+      FIN
+      
+      // On charge tout en RAM une seule fois (Évite les accès disques concurrents)
+      sContenu								est une chaîne	= fChargeTexte(m_sNomDeFichier)
+      sLigne, sSectionCourante, sCle, sValeur	sont des chaînes
+      sSectionCourante = "General"
+      
+      POUR TOUTE CHAÎNE sLigne DE sContenu SÉPARÉE PAR RC
+      	sLigne = SansEspace(sLigne)
+      	
+      	// On ignore les lignes vides et les commentaires
+      	SI sLigne = "" OU Gauche(sLigne, 1) = ";" ALORS CONTINUER
+      	
+      	// Si c'est une section (ex: [BDD])
+      	SI Gauche(sLigne, 1) = "[" ET Droite(sLigne, 1) = "]" ALORS
+      		sSectionCourante = Milieu(sLigne, 2, Taille(sLigne) - 2)
+      		CONTINUER
+      	FIN
+      	
+      	// Parsing de la clé et valeur (ex: Port=8080)
+      	nPosition est un entier = Position(sLigne, "=")
+      	SI nPosition > 0 ALORS
+      		sCle										= SansEspace(Gauche(sLigne, nPosition - 1))
+      		sValeur										= SansEspace(Milieu(sLigne, nPosition + 1))
+      		
+      		// On stocke sous la forme "Section.Cle" pour éviter les doublons de clés entre sections
+      		m_Parametres[sSectionCourante + "." + sCle]	= sValeur
+      	FIN
+      FIN
+     type : 458752
+   -
+     name : LireParametre
+     procedure_id : 1889386826827332091
+     type_code : 12
+     code : |1-
+      procédure publique LireParametre(LOCAL a_section est une chaîne, LOCAL a_cle est une chaîne, LOCAL a_valeurDefaut est une chaîne = "") : chaîne
+      // Résolution de la configuration en mémoire (O(1))
+      sCleCible est une chaîne = a_section + "." + a_cle
+      
+      SI m_Parametres[sCleCible] <> "" ALORS
+      	RENVOYER m_Parametres[sCleCible]
+      FIN
+      
+      RENVOYER a_valeurDefaut
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : BQAAAAUAAAA6ih3UbgNXHwTtiPSFUEj+2fi/m7v4QV2rqidAupM=
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x1a3872500051993f
+  internal_properties : BQAAAAUAAAAnMYFQ1bL/vz9ehh7L22SNNSlIzGTOI8h5F/WtgDNP
+custom_note :
+ internal_properties : BQAAAAUAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

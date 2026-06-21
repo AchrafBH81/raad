@@ -18,7 +18,7 @@ class :
       CLBase est une Classe
       	
       	m_connexion					est une connexion
-      	m_FichierIni				est CLIniFichier dynamique 
+      	m_Configuration				est clConfiguration dynamique 
       	m_log						est CLlog dynamique 
       	m_Table						est un tableau associatif de dynamique CLRecord
       fin
@@ -62,11 +62,12 @@ class :
       
       procédure ChargeConfiguration()
       
-      m_connexion..Provider			= m_FichierIni.LireEcrireClé("BDD","Provider","WinDevClientServeurHF")
-      m_connexion..Serveur			= m_FichierIni.LireEcrireClé("BDD","Serveur","127.0.0.1")
-      m_connexion..BaseDeDonnées		= m_FichierIni.LireEcrireClé("BDD","BaseDeDonnées","Test")
-      m_connexion..Utilisateur		= m_FichierIni.LireEcrireClé("BDD","Utilisateur","admin")
-      m_connexion..MotDePasse			= m_FichierIni.LireEcrireClé("BDD","MotDePasse","")
+      // On adapte la lecture de la base de données avec la nouvelle syntaxe
+      m_connexion..Provider		= m_Configuration.LireParametre("BDD", "Provider", "WinDevClientServeurHF")
+      m_connexion..Serveur		= m_Configuration.LireParametre("BDD", "Serveur", "127.0.0.1")
+      m_connexion..BaseDeDonnées	= m_Configuration.LireParametre("BDD", "BaseDeDonnées", "Test")
+      m_connexion..Utilisateur	= m_Configuration.LireParametre("BDD", "Utilisateur", "admin")
+      m_connexion..MotDePasse		= m_Configuration.LireParametre("BDD", "MotDePasse", "")
      type : 458752
    -
      name : Initialisation
@@ -74,9 +75,9 @@ class :
      type_code : 12
      code : |1+
       
-      procédure Initialisation(LOCAL A_fichierini est CLIniFichier dynamique , local A_log  est CLlog dynamique)
+      procédure Initialisation(LOCAL A_fichierini est CLConfiguration dynamique , local A_log  est CLlog dynamique)
       
-      m_FichierIni	= A_fichierini
+      m_Configuration	= A_fichierini
       m_log			=  A_log
       
       local

@@ -21,7 +21,8 @@ class :
       	//m_PortSocket		est un entier  	
       	m_ServeurSocket				est CLServeurSocket dynamique 
       	m_CanalSocket				est CLSocketCanal dynamique 			
-      	m_FichierIni				est CLIniFichier dynamique
+      	//m_FichierIni				est CLIniFichier dynamique
+      	m_Configuration				est CLConfiguration dynamique
       	m_log						est CLlog dynamique
       	m_system					est CLSysteme dynamique 
       	m_Base						est CLBase dynamique  
@@ -136,14 +137,14 @@ class :
       
       
       // 1. Initialisation de la structure (Point de départ unique)
-      m_structureProjet = new CLGestionnaireStructureProjet
+      m_structureProjet	= new CLGestionnaireStructureProjet
       // 2. Initialisation du service de Log (Nécessite le répertoire Log de la structure)
-      m_log = new CLlog
+      m_log				= new CLlog
       // Imaginons une méthode d'initialisation pour le log
       // m_log.Initialiser(m_structureProjet.P_RepLog())
       
       // 3. Initialisation du Gestionnaire de VHost
-      m_GestionnaireVHost = new CLGestionnaireVHost
+      m_GestionnaireVHost	= new CLGestionnaireVHost
       // On utilise P_RepConf() pour localiser le fichier de configuration [cite: 119, 120]
       m_GestionnaireVHost.Initialisation(m_structureProjet.P_RepConf + "\vhosts.conf", m_log)
       
@@ -151,19 +152,21 @@ class :
       m_system			= new CLSysteme
       
       
-      //Fichier de configuration
-      m_FichierIni		= new CLIniFichier
-      m_FichierIni.Initialisation(m_structureProjet.P_RepConf + "\config.conf",m_log) 
+      // Remplacement du lecteur INI
+      m_Configuration		= allouer un CLConfiguration
+      m_Configuration.Initialisation(m_structureProjet.P_RepConf + "\config.conf", m_log)
       
-      //BDD
-      m_Base = new CLBase
-      m_Base.Initialisation(m_FichierIni,m_log)
+      // Initialisation de la BDD
+      m_Base = allouer un CLBase
+      m_Base.Initialisation(m_Configuration, m_log) 
       
-      //socket 
-      m_ServeurSocket								= new CLServeurSocket
+      // Configuration du Serveur
+      m_ServeurSocket								= allouer un CLServeurSocket
       m_ServeurSocket.m_Proc_CallBack				= MessageRecu
+      m_ServeurSocket.P_PortSocket				= Val(m_Configuration.LireParametre("Serveur", "Port", "8080"))
       
-      m_ServeurSocket.P_PortSocket					= Val(m_FichierIni.LireEcrireClé("Serveur","Port",8080))
+      // ON LIT LE CHEMIN PHP DEPUIS LA CONFIGURATION !
+      m_ServeurSocket.P_CheminPhpCgi				= m_Configuration.LireParametre("Serveur", "CheminPhpCgi", "")
       m_ServeurSocket.p_NomSocketEcoute			= "SocketRaaD"
      type : 458752
    -

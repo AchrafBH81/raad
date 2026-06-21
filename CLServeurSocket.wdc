@@ -22,6 +22,7 @@ class :
       	m_NomSocketEcoute	est une chaine
       	m_sNomCanal			est une chaîne
       	m_CanalSocket		est Dynamic clsocketcanal
+      	m_CheminPhpCgi      est une chaîne
       fin
      type : 131072
   procedures :
@@ -193,6 +194,24 @@ class :
          procédure publique P_PortSocket(a_Valeur est un entier)
          
          m_PortSOcket = a_Valeur
+        type : 2031616
+     template_refs : []
+   -
+     name : p_CheminPhpCgi
+     identifier : 0x1a3876230059861b
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         procédure publique p_CheminPhpCgi() : chaîne
+         
+         renvoyer m_CheminPhpCgi
+        type : 1966080
+      -
+        code : |1-
+         procédure publique p_CheminPhpCgi(Valeur est une chaîne)
+         
+         m_CheminPhpCgi=Valeur
         type : 2031616
      template_refs : []
   procedure_templates : []
