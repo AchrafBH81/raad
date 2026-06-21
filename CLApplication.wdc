@@ -275,11 +275,12 @@ class :
      name : _UpdateRecord
      procedure_id : 1515318213611328442
      type_code : 12
-     code : |1+
+     code : |1-
       procédure privée _UpdateRecord(l_HttpReq est CLSocketCanal)
       
-      L_record est  CLRecord
+      L_record est un CLRecord dynamique = allouer un CLRecord
       L_record <= m_Base.m_Table[l_HttpReq.m_Parametres["table"]]
+      
       L_record.m_json = l_HttpReq.m_CorpReq
       L_record.Update()
       
@@ -290,6 +291,8 @@ class :
       	l_HttpReq.m_CodeReponse		= "200 OK"
       	l_HttpReq.m_ContenuBuffer	= L_record.m_json
       FIN
+      
+      libérer L_record
      type : 458752
    -
      name : _CreateRecord
