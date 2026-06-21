@@ -15,9 +15,6 @@ class :
   p_codes :
    -
      code : |1+
-      // Achraf 21/06/2026
-      
-      
       CLApplication est une Classe
       	
       prive
