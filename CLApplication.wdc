@@ -135,7 +135,6 @@ class :
       
       procédure PRIVÉE _Init()
       
-      
       // 1. Initialisation de la structure (Point de départ unique)
       m_structureProjet	= new CLGestionnaireStructureProjet
       // 2. Initialisation du service de Log (Nécessite le répertoire Log de la structure)
