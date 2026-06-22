@@ -120,10 +120,10 @@ class :
       Cache-Control:%2
       ]
       
-      a_listeextention est une chaîne = fChargeBuffer(fRepExe() + ["\"]+"Systeme\Externe\extensions.conf")
+      a_listeextentions est une chaîne = fChargeBuffer(fRepExe() + ["\"]+"Systeme\Externe\extensions.conf")
       TableauSupprimeTout(m_TabExtensions)
       
-      POUR TOUTE CHAÎNE a_extension DE a_listeextention SÉPARÉE PAR RC
+      POUR TOUTE CHAÎNE a_extension DE a_listeextentions SÉPARÉE PAR RC
       	
       	m_TabExtensions[a_extension[[ À Position(a_extension,";")-1]]] = ChaîneConstruit(a_param,a_extension[[Position(a_extension,";")+1 À Position(a_extension,";",0,DepuisFin)-1]] , a_extension[[Position(a_extension,";",0,DepuisFin)+1 À ]])
       	

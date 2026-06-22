@@ -81,7 +81,7 @@ class :
       m_log			=  A_log
       
       local
-      	l_NomTbale est chaine 
+      	l_NomTable est chaine 
       
       ChargeConfiguration()
       
@@ -91,15 +91,15 @@ class :
       	pour tout CHAÎNE a_table de  sListetable SÉPARÉE PAR RC
       		// on déclare les tables de la base 
       		
-      		l_NomTbale = Remplace(a_table,[".FIC",".fic"],"")
+      		l_NomTable = Remplace(a_table,[".FIC",".fic"],"")
       		
-      		HDéclareExterne(a_table,l_NomTbale,m_connexion)
+      		HDéclareExterne(a_table,l_NomTable,m_connexion)
       		l_table est dynamique clrecord = new clrecord 
-      		l_table.init(l_NomTbale)
+      		l_table.init(l_NomTable)
       		l_table.m_base <= objet
       	
-      		m_table[l_NomTbale] =new clrecord
-      		m_Table[l_NomTbale] = l_table
+      		m_table[l_NomTable] =new clrecord
+      		m_Table[l_NomTable] = l_table
       		
       		
       	FIN

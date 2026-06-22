@@ -19,7 +19,7 @@ class :
       	m_Proc_CallBack			est une procédure
       Prive
       	m_CLconfiguration   est CLConfiguration dynamique
-      	m_PortSOcket		est un entier	= 5010
+      	m_PortSocket		est un entier	= 5010
       	m_NomSocketEcoute	est une chaine
       	m_sNomCanal			est une chaîne
       	m_CheminPhpCgi      est une chaîne

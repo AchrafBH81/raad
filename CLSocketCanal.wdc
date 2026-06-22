@@ -79,25 +79,25 @@ class :
      type_code : 12
      code : |1-
       procédure privée _GetParam()
-      
-      Indpos	est un entier
+      Local
+      L_indicePosition	est un entier
       
       
       //Récupérer les paramètres passés dans l'URL
-      UrlPram	est chaine	= m_UrlRecu[[ Position(m_UrlRecu,"?")+1 À]]
-      POUR TOUTE CHAÎNE souschaine DE UrlPram SÉPARÉE PAR "&"
-      	Indpos = Position(souschaine,"=")
-      	SI Indpos ALORS
-      		m_Parametres[SansEspace(souschaine[[ À Indpos-1]])] = SansEspace(souschaine[[Indpos+1 À ]])
+      UrlParametre	est chaine	= m_UrlRecu[[ Position(m_UrlRecu,"?")+1 À]]
+      POUR TOUTE CHAÎNE souschaine DE UrlParametre SÉPARÉE PAR "&"
+      	L_indicePosition = Position(souschaine,"=")
+      	SI L_indicePosition ALORS
+      		m_Parametres[SansEspace(souschaine[[ À L_indicePosition-1]])] = SansEspace(souschaine[[L_indicePosition+1 À ]])
       	FIN	
       FIN
       
       
       //Récupérer les paramètres passés dans l'en-tête.
       POUR TOUTE CHAÎNE souschaine DE m_HeaderReq SÉPARÉE PAR rc
-      	Indpos = Position(souschaine,":")	
-      	SI Indpos ALORS
-      		m_Parametres[SansEspace(souschaine[[ À Indpos-1]])] = SansEspace(souschaine[[Indpos+1 À ]])	
+      	L_indicePosition = Position(souschaine,":")	
+      	SI L_indicePosition ALORS
+      		m_Parametres[SansEspace(souschaine[[ À L_indicePosition-1]])] = SansEspace(souschaine[[L_indicePosition+1 À ]])	
       	FIN
       FIN
      type : 458752

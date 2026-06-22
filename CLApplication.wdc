@@ -80,7 +80,7 @@ class :
       				_UpdateRecord(SocketRecu)
       			cas "DELETE"
       				// Suppression enregistrement 
-      				_DelteRecord(SocketRecu)
+      				_DeleteRecord(SocketRecu)
       			
       		FIN
       		
@@ -323,11 +323,11 @@ class :
       libérer L_record
      type : 458752
    -
-     name : _DelteRecord
+     name : _DeleteRecord
      procedure_id : 1522551269196454160
      type_code : 12
      code : |1+
-      procédure privée _DelteRecord(l_HttpReq est CLSocketCanal)
+      procédure privée _DeleteRecord(l_HttpReq est CLSocketCanal)
       
       
       
