@@ -18,10 +18,10 @@ class :
       CLServeurSocket est une Classe
       	m_Proc_CallBack			est une procédure
       Prive
+      	m_CLconfiguration   est CLConfiguration dynamique
       	m_PortSOcket		est un entier	= 5010
       	m_NomSocketEcoute	est une chaine
       	m_sNomCanal			est une chaîne
-      	m_CanalSocket		est Dynamic clsocketcanal
       	m_CheminPhpCgi      est une chaîne
       fin
      type : 131072
@@ -32,9 +32,6 @@ class :
      type_code : 27
      code : |1+
       procédure Constructeur()
-      
-      m_CanalSocket = new clsocketcanal
-      m_CanalSocket.init()
      type : 589824
    -
      name : Destructeur
@@ -74,36 +71,30 @@ class :
      type_code : 12
      code : |1+
       // --------------------------------------------------------------------------------------
-      // Procédure automatique : Exécution dans un thread dédié
-      // --------------------------------------------------------------------------------------
-      // Cette procédure est lancée automatiquement en mode Thread par WINDEV à chaque 
-      // nouvelle connexion client (via l'appel ou les propriétés de la procédure).
+      // Procédure automatique :
+      // La procédure est exécutée manuellement, lors d'un appel dans le code
+      // Elle s'exécutera dans un thread (sans avoir besoin d'appeler la fonction ThreadExecute), sans utilisation de HFSQL
       // 
-      // SÉCURITÉ CONCURRENTIELLE (THREAD-SAFE) :
-      // Elle s'exécute avec une **Copie indépendante du contexte HFSQL**. 
-      // Chaque thread possède ses propres pointeurs de fichiers, curseurs et requêtes.
-      // Cela garantit que les accès à la base de données (HLit, HExécuteRequêteSQL, etc.) 
-      // ne se mélangent jamais avec ceux des autres requêtes HTTP traitées simultanément.
-      // ---
       
-      procédure privée GestionConnexion(local sNomConnexion est chaine )
+      procédure privée GestionConnexion(local sNomConnexion est chaine)
       
       
       SectionCritiqueDébut(sNomConnexion)
       
-      CanalSocket est un CLSocketCanal  <= m_CanalSocket
+      l_CanalSocket est un CLSocketCanal dynamique = new CLSocketCanal(m_CLconfiguration)
+      
       
       
       quand Exception dans
       	
-      	CanalSocket.m_MessageSocketRecu	= SocketLit(sNomConnexion,Faux)
-      	si CanalSocket.m_MessageSocketRecu <> "" alors 
-      		CanalSocket.m_NomSocket		= sNomConnexion
-      		CanalSocket.m_AdresseClient	= SocketClientInfo(sNomConnexion,SocketAdresse)
+      	l_CanalSocket.m_MessageSocketRecu	= SocketLit(sNomConnexion,Faux)
+      	si l_CanalSocket.m_MessageSocketRecu <> "" alors 
+      		l_CanalSocket.m_NomSocket		= sNomConnexion
+      		l_CanalSocket.m_AdresseClient	= SocketClientInfo(sNomConnexion,SocketAdresse)
       		
-      		m_Proc_CallBack(CanalSocket)
+      		m_Proc_CallBack(l_CanalSocket)
       		
-      		SocketEcrit(sNomConnexion,CanalSocket.m_MessageSocketReponse)
+      		SocketEcrit(sNomConnexion,l_CanalSocket.m_MessageSocketReponse)
       	fin
       	
       	
@@ -212,6 +203,18 @@ class :
          procédure publique p_CheminPhpCgi(Valeur est une chaîne)
          
          m_CheminPhpCgi=Valeur
+        type : 2031616
+     template_refs : []
+   -
+     name : P_CLconfiguration
+     identifier : 0x1a397d030051612b
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         procédure publique P_CLconfiguration(Valeur est CLConfiguration)
+         
+         m_CLconfiguration=Valeur
         type : 2031616
      template_refs : []
   procedure_templates : []

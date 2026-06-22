@@ -131,7 +131,7 @@ class :
      name : _Init
      procedure_id : 1467015460854427412
      type_code : 12
-     code : |1+
+     code : |1-
       
       procédure PRIVÉE _Init()
       
@@ -163,10 +163,9 @@ class :
       m_ServeurSocket								= allouer un CLServeurSocket
       m_ServeurSocket.m_Proc_CallBack				= MessageRecu
       m_ServeurSocket.P_PortSocket				= Val(m_Configuration.LireParametre("Serveur", "Port", "8080"))
-      
-      // ON LIT LE CHEMIN PHP DEPUIS LA CONFIGURATION !
       m_ServeurSocket.P_CheminPhpCgi				= m_Configuration.LireParametre("Serveur", "CheminPhpCgi", "")
       m_ServeurSocket.p_NomSocketEcoute			= "SocketRaaD"
+      m_ServeurSocket.P_CLconfiguration           = m_Configuration
      type : 458752
    -
      name : _GetRecord

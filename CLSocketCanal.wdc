@@ -16,13 +16,13 @@ class :
    -
      code : |1+
       CLSocketCanal est une Classe
-      
+      	m_configuration			est CLConfiguration dynamique
       	m_NomSocket				est chaine 
       	m_AdresseClient			est chaîne
       	m_MessageSocketRecu		est chaine 
       	m_MessageSocketReponse	est chaine 
       	m_CanalOuvert			est un booléen
-         
+      	
       	m_UrlRecu				est une chaîne
       	m_PointDentre			est une chaîne 		
       	m_CorpReq				est une chaîne 
@@ -34,8 +34,6 @@ class :
       	m_ContenuBuffer			est un Buffer
       	m_CodeReponse			est un chaîne
       	m_Parametres			est un tableau associatif de chaînes
-      	m_TabExtensions			est un tableau associatif de chaînes
-      	m_TabReponse			est un tableau associatif de chaînes
       	m_RepEXe				est une chaîne
       		
       fin
@@ -46,8 +44,9 @@ class :
      procedure_id : 1565592424979617442
      type_code : 27
      code : |1+
-      procédure Constructeur()
+      procédure Constructeur(a_Clonfiguration est CLConfiguration)
       
+      m_configuration = a_Clonfiguration
       m_CanalOuvert	= vrai
      type : 589824
    -
@@ -103,83 +102,6 @@ class :
       FIN
      type : 458752
    -
-     name : init
-     procedure_id : 1869975262566453456
-     type_code : 12
-     code : |1-
-      procédure init()
-      
-      _GetExtensions()
-      _InitTableReponse()
-     type : 458752
-   -
-     name : _GetExtensions
-     procedure_id : 1869975326991043791
-     type_code : 12
-     code : |1+
-      procédure privée _GetExtensions() <métier>
-      
-      //Nous allons initialiser les extensions avec leurs paramètres respectifs.
-      a_param est une chaîne = [
-      Content-Type:%1
-      Cache-Control:%2
-      ]
-      a_listeextention est une chaîne = fChargeBuffer(m_RepEXe+"Systeme\Externe\extensions.conf")
-      TableauSupprimeTout(m_TabExtensions)
-      
-      pour TOUTE CHAÎNE a_extension DE a_listeextention SÉPARÉE PAR RC
-      
-      	m_TabExtensions[a_extension[[ A Position(a_extension,";")-1]]] = ChaîneConstruit(a_param,a_extension[[Position(a_extension,";")+1 A Position(a_extension,";",0,depuisfin)-1]] , a_extension[[Position(a_extension,";",0,depuisfin)+1 A ]])
-      	
-      FIN
-      	
-      
-      
-      
-      
-     type : 458752
-   -
-     name : _InitTableReponse
-     procedure_id : 1869975326991109593
-     type_code : 12
-     code : |1+
-      procédure privée _InitTableReponse() <métier>
-      
-      // Code 200
-      m_TabReponse[200]=""
-      
-      // Code 404
-      m_TabReponse[404]=[
-      <html>
-      <body>
-        <h1>Erreur 404 - Page introuvable</h1>
-        <p>Désolé, la page que vous recherchez est introuvable.</p>
-      </body>
-      </html>
-      ]
-      
-      //Code 401
-      m_TabReponse[401]=[
-      <html>
-      <body>
-        <h1>Erreur 401 - Non autorisé</h1>
-        <p>Désolé, vous n'êtes pas autorisé à accéder à cette page.</p>
-      </body>
-      </html>
-      ]
-      
-      // Code 500
-      m_TabReponse[500]=[
-      <html>
-      <body>
-        <h1>Erreur 500 - Erreur interne du serveur</h1>
-        <p>Désolé, une erreur interne du serveur s'est produite.</p>
-      </body>
-      </html>
-      ]
-      
-     type : 458752
-   -
      name : _GenerateHeaderMessage
      procedure_id : 1869975412890474919
      type_code : 12
@@ -199,7 +121,7 @@ class :
       l_DateServer est une dateheure = DateHeureLocaleVersUTC(DateHeureSys())
       
       l_valeur = ChaîneConstruit(l_valeur,m_CodeReponse,Taille(m_ContenuBuffer), DateVersChaîne(l_DateServer.PartieDate,"JJ MMM AAAA" )+ " "+HeureVersChaîne(l_DateServer.PartieHeure,"HH:MM:SS")+" GMT")
-      l_valeur += [RC] + m_TabExtensions[m_Extension]
+      l_valeur += [RC] + m_configuration.m_TabExtensions[m_Extension]
       
       SI m_Gzip ALORS  l_valeur += [RC] + "Content-Encoding:Gzip"
       
@@ -259,7 +181,7 @@ class :
       	SI m_ContenuBuffer ="" ALORS 
       		// Code 404 si on ne trouve pas l'élément 
       		m_CodeReponse	= 404
-      		m_ContenuBuffer	= m_TabReponse[404]
+      		m_ContenuBuffer	= m_configuration.m_TabReponse[404]
       	FIN
       	
       	SI m_Extension DANS (".html",".css",".js",".txt",".xml",".json",".csv",".php",".asp",".jsp",".woff",".svg",".woff2",".ttf",".eot","hml") ALORS
@@ -270,7 +192,7 @@ class :
       FAIRE
       	// Code 500 
       	m_CodeReponse	= 500
-      	m_ContenuBuffer	= m_TabReponse[500]
+      	m_ContenuBuffer	= m_configuration.m_TabReponse[500]
       	
       FIN
      type : 458752

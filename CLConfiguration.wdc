@@ -114,19 +114,20 @@ class :
       // --- MAPPING DES EXTENSIONS (MIME TYPES) ---
       // Tu peux également charger ça depuis un "extensions.conf" si tu veux que ce soit dynamique
       LOCAL
-      	sModeleHeader est une chaîne = [
-      Content-Type: %1
-      Cache-Control: %2
+      //Nous allons initialiser les extensions avec leurs paramètres respectifs.
+      a_param est une chaîne = [
+      Content-Type:%1
+      Cache-Control:%2
       ]
-      // HTML
-      m_TabExtensions[".html"]	= ChaîneConstruit(sModeleHeader, "text/html; charset=UTF-8", "no-cache")
-      // JSON
-      m_TabExtensions[".json"]	= ChaîneConstruit(sModeleHeader, "application/json; charset=UTF-8", "no-cache")
-      // CSS
-      m_TabExtensions[".css"]		= ChaîneConstruit(sModeleHeader, "text/css", "max-age=31536000")
-      // JS
-      m_TabExtensions[".js"]		= ChaîneConstruit(sModeleHeader, "application/javascript", "max-age=31536000")
       
+      a_listeextention est une chaîne = fChargeBuffer(fRepExe() + ["\"]+"Systeme\Externe\extensions.conf")
+      TableauSupprimeTout(m_TabExtensions)
+      
+      POUR TOUTE CHAÎNE a_extension DE a_listeextention SÉPARÉE PAR RC
+      	
+      	m_TabExtensions[a_extension[[ À Position(a_extension,";")-1]]] = ChaîneConstruit(a_param,a_extension[[Position(a_extension,";")+1 À Position(a_extension,";",0,DepuisFin)-1]] , a_extension[[Position(a_extension,";",0,DepuisFin)+1 À ]])
+      	
+      FIN
       //-------------------------------------------------------------------------
      type : 458752
    -
