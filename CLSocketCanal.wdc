@@ -35,6 +35,8 @@ class :
       	m_CodeReponse			est un chaîne
       	m_Parametres			est un tableau associatif de chaînes
       	m_RepEXe				est une chaîne
+      	
+      	
       		
       fin
      type : 131072
