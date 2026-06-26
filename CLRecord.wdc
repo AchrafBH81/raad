@@ -1,21 +1,21 @@
 #To edit and compare internal_properties, use WINDEV integrated tools.
 #Internal properties refer to the properties of controls in windows, reports, etc.
 info :
- name : CLRecord
+ name : CLEnregistrement
  major_version : 25
  minor_version : 0
  type : 4
  description : ""
  subtype : 0
 class :
- identifier : 0x1506d11e03f2b109
+ identifier : 0x1a3eee48004d73c0
  internal_properties : BQAAAAUAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
  code_elements :
   type_code : 10
   p_codes :
    -
      code : |1+
-      CLRecord est une Classe
+      CLEnregistrement est une Classe
       	m_base				est un  CLBase
       	m_table				est une chaîne
       	m_condition			est une chaîne 
@@ -30,7 +30,7 @@ class :
   procedures :
    -
      name : Constructeur
-     procedure_id : 1515128251502276873
+     procedure_id : 1891210886552384448
      type_code : 27
      code : |1+
       procédure Constructeur()
@@ -38,7 +38,7 @@ class :
      type : 589824
    -
      name : Destructeur
-     procedure_id : 1515128251502342409
+     procedure_id : 1891210886552449984
      type_code : 28
      code : |1+
       procédure Destructeur()
@@ -47,7 +47,7 @@ class :
    -
      name : Init
      internal_properties : BQAAAAUAAACImnRJsF50iZYchkR09F7TtGg1nM/VEUTRJB7LW2XgxFBxbfYm5VPvd7lrLNEeTBZ1DPx533hBQ/Is+0bJXBwWKzmV9QA5bM31GiA0pnUFK40/ViZ1nIhkX9AVgplALbsYmtJIvMXArFmA1WVogjZiii1S1epLUym3MH1KoW6Le2Oy8UnVWFX/4XJgk69dZdvMETgVLQ==
-     procedure_id : 1515128251502473481
+     procedure_id : 1891210886552515520
      type_code : 12
      code : |1+
       procédure Init(a_table est une chaîne)
@@ -103,7 +103,7 @@ class :
      type : 458752
    -
      name : Load
-     procedure_id : 1515130764058402056
+     procedure_id : 1891210886552581056
      type_code : 12
      code : |1-
       procédure Load(local a_valkey est une chaîne, a_condition est une chaîne)
@@ -149,7 +149,7 @@ class :
      type : 458752
    -
      name : Update
-     procedure_id : 1515323058336025270
+     procedure_id : 1891210886552646592
      type_code : 12
      code : |1+
       procédure Update()
@@ -194,7 +194,7 @@ class :
      type : 458752
    -
      name : Create
-     procedure_id : 1515471067155767403
+     procedure_id : 1891210886552712128
      type_code : 12
      code : |1-
       procédure Create()
@@ -223,7 +223,7 @@ class :
      type : 458752
    -
      name : _JsonToRecord
-     procedure_id : 1521635912884635229
+     procedure_id : 1891210886552777664
      type_code : 12
      code : |1+
       procédure privée _JsonToRecord():Enregistrement

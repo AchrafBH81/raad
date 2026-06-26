@@ -73,9 +73,9 @@ class :
      procedure_id : 1739324607985746126
      type_code : 12
      code : |1+
-      procédure privée _InitialiserFichierAvecContenu(sCheminFichier est une chaîne, sContenu est une chaîne)
-      SI PAS fFichierExiste(sCheminFichier) ALORS
-      	fSauveTexte(sCheminFichier, sContenu)
+      procédure privée _InitialiserFichierAvecContenu(a_CheminFichier est une chaîne, a_Contenu est une chaîne)
+      SI PAS fFichierExiste(a_CheminFichier) ALORS
+      	fSauveTexte(a_CheminFichier, a_Contenu)
       FIN
       
      type : 458752

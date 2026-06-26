@@ -81,7 +81,7 @@ class :
       
       SectionCritiqueDébut(sNomConnexion)
       
-      l_CanalSocket est un CLSocketCanal dynamique = new CLSocketCanal(m_CLconfiguration)
+      l_CanalSocket est un CLCanalSocket dynamique = new CLCanalSocket(m_CLconfiguration)
       
       
       

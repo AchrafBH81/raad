@@ -19,8 +19,8 @@ class :
       	
       	m_connexion					est une connexion
       	m_Configuration				est clConfiguration dynamique 
-      	m_log						est CLlog dynamique 
-      	m_Table						est un tableau associatif de dynamique CLRecord
+      	m_log						est CLjournalisation dynamique 
+      	m_Table						est un tableau associatif de dynamique clenregistrement
       fin
      type : 131072
   procedures :
@@ -75,7 +75,7 @@ class :
      type_code : 12
      code : |1+
       
-      procédure Initialisation(LOCAL A_fichierini est CLConfiguration dynamique , local A_log  est CLlog dynamique)
+      procédure Initialisation(LOCAL A_fichierini est CLConfiguration dynamique , local A_log  est CLjournalisation dynamique)
       
       m_Configuration	= A_fichierini
       m_log			=  A_log
@@ -94,11 +94,11 @@ class :
       		l_NomTable = Remplace(a_table,[".FIC",".fic"],"")
       		
       		HDéclareExterne(a_table,l_NomTable,m_connexion)
-      		l_table est dynamique clrecord = new clrecord 
+      		l_table est dynamique clenregistrement = new clenregistrement 
       		l_table.init(l_NomTable)
       		l_table.m_base <= objet
       	
-      		m_table[l_NomTable] =new clrecord
+      		m_table[l_NomTable] =new clenregistrement
       		m_Table[l_NomTable] = l_table
       		
       		
@@ -146,7 +146,7 @@ class :
      procedure_id : 1473768064283517472
      type_code : 12
      code : |1+
-      procédure publique  GetRecord(l_record est CLRecord )
+      procédure publique  GetRecord(l_record est clenregistrement )
       
       LOCAL
       m_ReqSQL est une source de données
@@ -205,10 +205,10 @@ class :
      procedure_id : 1887690151532548473
      type_code : 12
      code : |1+
-      procédure CreerNouveauRecord(LOCAL a_NomTable est une chaîne) : CLRecord 
+      procédure CreerNouveauRecord(LOCAL a_NomTable est une chaîne) : clenregistrement 
       
       // On alloue une NOUVELLE instance en mémoire pour chaque requête
-      l_nouveauRecord est un CLRecord dynamique = allouer un CLRecord
+      l_nouveauRecord est un clenregistrement dynamique = allouer un clenregistrement
       l_nouveauRecord.init(a_NomTable)
       l_nouveauRecord.m_base <= Objet // On passe la référence de la base
       

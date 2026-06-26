@@ -1,21 +1,21 @@
 #To edit and compare internal_properties, use WINDEV integrated tools.
 #Internal properties refer to the properties of controls in windows, reports, etc.
 info :
- name : CLSocketCanal
+ name : CLCanalSocket
  major_version : 25
  minor_version : 0
  type : 4
  description : ""
  subtype : 0
 class :
- identifier : 0x15ba1a0401f2d6a2
+ identifier : 0x1a3eee90005b8cb2
  internal_properties : BQAAAAUAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
  code_elements :
   type_code : 10
   p_codes :
    -
      code : |1+
-      CLSocketCanal est une Classe
+      CLCanalSocket est une Classe
       	m_configuration			est CLConfiguration dynamique
       	m_NomSocket				est chaine 
       	m_AdresseClient			est chaîne
@@ -43,7 +43,7 @@ class :
   procedures :
    -
      name : Constructeur
-     procedure_id : 1565592424979617442
+     procedure_id : 1891211195790953650
      type_code : 27
      code : |1+
       procédure Constructeur(a_Clonfiguration est CLConfiguration)
@@ -53,7 +53,7 @@ class :
      type : 589824
    -
      name : Destructeur
-     procedure_id : 1565592424979682978
+     procedure_id : 1891211195791019186
      type_code : 28
      code : |1+
       procédure Destructeur()
@@ -61,7 +61,7 @@ class :
      type : 655360
    -
      name : AnalyseReq
-     procedure_id : 1869974729990385595
+     procedure_id : 1891211195791084722
      type_code : 12
      code : |1+
       procédure AnalyseReq()
@@ -77,7 +77,7 @@ class :
      type : 458752
    -
      name : _GetParam
-     procedure_id : 1869974906084084794
+     procedure_id : 1891211195791150258
      type_code : 12
      code : |1-
       procédure privée _GetParam()
@@ -105,7 +105,7 @@ class :
      type : 458752
    -
      name : _GenerateHeaderMessage
-     procedure_id : 1869975412890474919
+     procedure_id : 1891211195791215794
      type_code : 12
      code : |1+
       procédure privée _GenerateHeaderMessage()<métier> : chaîne
@@ -133,7 +133,7 @@ class :
      type : 458752
    -
      name : GetReponse
-     procedure_id : 1869978097245135646
+     procedure_id : 1891211195791281330
      type_code : 12
      code : |1+
       procédure GetReponse()
@@ -144,7 +144,7 @@ class :
    -
      name : GetFile
      internal_properties : BQAAAAUAAAD36zHHNzqf1YsqeKhuAost9QyLwtABFfotENHsY2gZ1tIU31foK+W8B+1m+nSsxbHfm/GkZcbbPfhdiIe+tbDcWiNV06NQpF7AYcpRx8WSEW3D21cMjgb70UHvmaq+VJnA8JlXt5UwyTVd2ci9xpX8Trv96APNobyVszOFLo7Ane9K+sJcAL0SB11kzofqtIhi5g==
-     procedure_id : 1869980601211127926
+     procedure_id : 1891211195791346866
      type_code : 12
      code : |1+
       procédure publique  GetFile() <métier>

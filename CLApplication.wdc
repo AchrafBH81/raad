@@ -20,10 +20,10 @@ class :
       prive
       	//m_PortSocket		est un entier  	
       	m_ServeurSocket				est CLServeurSocket dynamique 
-      	m_CanalSocket				est CLSocketCanal dynamique 			
+      	m_CanalSocket				est CLCanalSocket dynamique 			
       	//m_FichierIni				est CLIniFichier dynamique
       	m_Configuration				est CLConfiguration dynamique
-      	m_log						est CLlog dynamique
+      	m_log						est CLjournalisation dynamique
       	m_system					est CLSysteme dynamique 
       	m_Base						est CLBase dynamique  
       	m_structureProjet			est CLGestionnaireStructureProjet dynamique
@@ -59,7 +59,7 @@ class :
      type_code : 12
      code : |1+
       
-      procédure MessageRecu(SocketRecu est CLSocketCanal) 
+      procédure MessageRecu(SocketRecu est CLCanalSocket) 
       
       SocketRecu.AnalyseReq()
       
@@ -138,7 +138,7 @@ class :
       // 1. Initialisation de la structure (Point de départ unique)
       m_structureProjet	= new CLGestionnaireStructureProjet
       // 2. Initialisation du service de Log (Nécessite le répertoire Log de la structure)
-      m_log				= new CLlog
+      m_log				= new CLjournalisation
       // Imaginons une méthode d'initialisation pour le log
       // m_log.Initialiser(m_structureProjet.P_RepLog())
       
@@ -172,11 +172,11 @@ class :
      procedure_id : 1473736444733868589
      type_code : 12
      code : |1+
-      procédure prive _GetRecord(l_HttpReq est CLSocketCanal)
+      procédure prive _GetRecord(l_HttpReq est CLCanalSocket)
       
       // Affectation par copie 
       
-      L_record est  CLRecord
+      L_record est  clenregistrement
       L_record <= m_Base.m_Table[l_HttpReq.m_Parametres["table"]]
       
       L_record.Load(l_HttpReq.m_Parametres["valkey"],l_HttpReq.m_Parametres["condition"])
@@ -197,7 +197,7 @@ class :
      procedure_id : 1473738635167241172
      type_code : 12
      code : |1+
-      procédure Privé _ExecuteSql(l_HttpReq est CLSocketCanal)
+      procédure Privé _ExecuteSql(l_HttpReq est CLCanalSocket)
       
       
       l_base est CLBase dynamique = allouer CLBase
@@ -213,7 +213,7 @@ class :
      procedure_id : 1475447456628364679
      type_code : 12
      code : |1+
-      procédure privée _GetMemory(l_HttpReq est CLSocketCanal) <métier>
+      procédure privée _GetMemory(l_HttpReq est CLCanalSocket) <métier>
       
      type : 458752
    -
@@ -221,7 +221,7 @@ class :
      procedure_id : 1478157130026548149
      type_code : 12
      code : |1-
-      procédure privée _GetFile(l_HttpReq est CLSocketCanal)<métier>
+      procédure privée _GetFile(l_HttpReq est CLCanalSocket)<métier>
       
       l_HttpReq.GetFile()
      type : 458752
@@ -230,7 +230,7 @@ class :
      procedure_id : 1478385377465361484
      type_code : 12
      code : |1-
-      procédure privée _GetRecords(l_HttpReq est CLSocketCanal)
+      procédure privée _GetRecords(l_HttpReq est CLCanalSocket)
       
       
       
@@ -272,9 +272,9 @@ class :
      procedure_id : 1515318213611328442
      type_code : 12
      code : |1-
-      procédure privée _UpdateRecord(l_HttpReq est CLSocketCanal)
+      procédure privée _UpdateRecord(l_HttpReq est CLCanalSocket)
       
-      L_record est un CLRecord dynamique = allouer un CLRecord
+      L_record est un clenregistrement dynamique = allouer un clenregistrement
       L_record <= m_Base.m_Table[l_HttpReq.m_Parametres["table"]]
       
       L_record.m_json = l_HttpReq.m_CorpsReq
@@ -295,7 +295,7 @@ class :
      procedure_id : 1521641157040203827
      type_code : 12
      code : |1+
-      procédure privée _CreateRecord(l_HttpReq est CLSocketCanal)
+      procédure privée _CreateRecord(l_HttpReq est CLCanalSocket)
       
       // Déclaration d'une instance locale au thread.
       // L'utilisation de l'opérateur '<=' effectue une affectation par copie (et non par référence).
@@ -304,7 +304,7 @@ class :
       // Cela garantit que les données (ex: m_json, m_erreur) ne s'écrasent pas entre deux clients simultanés (Thread-Safe).
       
       // On alloue une VRAIE nouvelle instance totalement isolée en mémoire
-      L_record est un CLRecord dynamique = allouer un CLRecord
+      L_record est un clenregistrement dynamique = allouer un clenregistrement
       L_record <= m_Base.m_Table[l_HttpReq.m_Parametres["table"]]
       
       
@@ -327,7 +327,7 @@ class :
      procedure_id : 1522551269196454160
      type_code : 12
      code : |1+
-      procédure privée _DeleteRecord(l_HttpReq est CLSocketCanal)
+      procédure privée _DeleteRecord(l_HttpReq est CLCanalSocket)
       
       
       

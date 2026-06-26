@@ -19,7 +19,7 @@ class :
       
       PRIVÉ
       	m_sNomDeFichier		est une chaîne
-      	m_log				est CLlog dynamique
+      	m_log				est CLjournalisation dynamique
       	
       
       	
@@ -79,7 +79,7 @@ class :
      procedure_id : 1889386096682852937
      type_code : 12
      code : |1+
-      procédure publique Initialisation(LOCAL a_nomFichier est une chaîne, LOCAL a_log est CLlog dynamique)
+      procédure publique Initialisation(LOCAL a_nomFichier est une chaîne, LOCAL a_log est CLjournalisation dynamique)
       m_sNomDeFichier	= a_nomFichier
       m_log			= a_log
       

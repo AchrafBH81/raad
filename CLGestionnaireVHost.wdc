@@ -19,7 +19,7 @@ class :
       PRIVÉ
       	m_tabVHosts		est un tableau associatif de chaînes
       	m_FichierConf	est une chaîne
-      	m_log			est CLlog dynamique
+      	m_log			est CLjournalisation dynamique
       FIN
       
      type : 131072
@@ -49,7 +49,7 @@ class :
       // Méthode : Initialisation
       // But     : Lire le fichier vhosts.conf et charger le tableau associatif
       //-------------------------------------------------------------------------
-      procédure publique Initialisation(LOCAL a_FichierConf est une chaîne, LOCAL a_log est CLlog dynamique)
+      procédure publique Initialisation(LOCAL a_FichierConf est une chaîne, LOCAL a_log est CLjournalisation dynamique)
       m_FichierConf	= a_FichierConf
       m_log			= a_log
       
