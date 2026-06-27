@@ -1,0 +1,253 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : CLEnregistrement
+ major_version : 25
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x1a3eee48004d73c0
+ internal_properties : BQAAAAUAAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1+
+      CLEnregistrement est une Classe
+      	m_base				est un  CLBase
+      	m_table				est une chaîne
+      	m_condition			est une chaîne 
+      	m_erreur			est une chaîne 
+      	m_json				est une chaîne
+      	m_key				est une chaine
+      	m_valkey			est une chaine  
+      	m_Sql				est une chaine  
+      		
+      fin
+      
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1891210886552384448
+     type_code : 27
+     code : |1+
+      procédure Constructeur()
+      
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1891210886552449984
+     type_code : 28
+     code : |1+
+      procédure Destructeur()
+      
+     type : 655360
+   -
+     name : Init
+     internal_properties : BQAAAAUAAAAcLpBr0K4gYdokgggwYHq/YBDVaIPdjeR1VEo/vzFcOGRJ3cJSZZ8PG6l3iF2SwOIJ5Kz9k7gF+y7kHyJ9kOiyf4Gl6ZSxsH3J0o4OXMu3LZ/R6PhT8uLCOdoLDGeu/5VyBBzyGltKMtMa629WkCiEXPdkF9BB3bcZIms8d/TFHbUUK8MzJhfF8wS+fXWDR63qNdSJuQ==
+     procedure_id : 1891210886552515520
+     type_code : 12
+     code : |1+
+      procédure Init(a_table est une chaîne)
+      
+      // on initialise la classe avec le nom de la table 
+      
+      // Extraction de la structure de la table 
+      
+      m_table = a_table
+      indrub est un entier
+      
+      l_ResRub est une chaîne = HListeClé(m_table,hLstDétailPlus)
+      l_nomRub est une chaine  
+      
+      POUR TOUTE CHAÎNE l_rub DE l_ResRub SEPAREE PAR RC
+      	
+      	POUR TOUTE CHAÎNE l_desRub de l_rub SEPAREE PAR TAB
+      		selon indrub
+      			
+      			cas 0 : l_nomRub = l_desRub
+      			
+      			cas 4 : SI Val(l_desRub) = 1  ALORS m_key = l_nomRub
+      		FIN
+      		
+      		 
+      		indrub++ 
+      		si indrub = 5 ou m_key <> "" alors sortir 
+      	FIN
+      
+      	si m_key <> "" ALORS SORTIR
+      FIN
+      //// déclaration dynamique de l'enregistrement 
+      //Trace(m_enrg..FichierAssocié)
+      //l_codeDynamique  est chaine = [
+      //e_%1 est un Enregistrement de %1 
+      //hlitpremier(wbarticle)
+      //]
+      //l_codeDynamique = ChaîneConstruit(l_codeDynamique,m_table)
+      //
+      //ExécuteCode(l_codeDynamique)
+      
+      
+      
+      CAS ERREUR:
+      m_base.Déconnexion()
+      m_erreur = ErreurInfo()
+      
+      
+      
+      CAS EXCEPTION:
+      m_base.Déconnexion()
+      m_erreur = ExceptionInfo()
+      
+     type : 458752
+   -
+     name : Load
+     procedure_id : 1891210886552581056
+     type_code : 12
+     code : |1-
+      procédure Load(local a_valkey est une chaîne, a_condition est une chaîne)
+      
+      m_valkey	= a_valkey
+      m_condition	= a_condition
+      
+      LOCAL
+      	L_ReqSQL			est une source de données
+      	L_ResEnregistrement	est un Enregistrement 
+      	
+      
+      SI m_valkey <> "" ALORS
+      	m_Sql = ChaîneConstruit("SELECT * FROM %1 where %2" , m_table, m_key + " = " + m_valkey )
+      SINON
+      	m_sql = ChaîneConstruit("SELECT * FROM %1 where %2" , m_table, m_condition ) 
+      FIN
+      
+      m_base.Connexion()
+      HExécuteRequêteSQL(L_ReqSQL,m_base.m_connexion,hRequêteSansCorrection,m_Sql)
+      // lire le premier enregistrement  
+      HLitPremier(L_ReqSQL)
+      FichierVersMémoire(L_ResEnregistrement,L_ReqSQL)
+      HAnnuleDéclaration(L_ReqSQL)
+      
+      //Sérialisation de l’enregistrement 
+      Sérialise(L_ResEnregistrement,m_json,psdJSON)
+      
+      
+      CAS ERREUR:
+      m_base.Déconnexion()
+      m_erreur = ErreurInfo()
+      
+      
+      
+      CAS EXCEPTION:
+      m_base.Déconnexion()
+      m_erreur = ExceptionInfo()
+      
+      
+      FIN :
+      m_base.Déconnexion()
+     type : 458752
+   -
+     name : Update
+     procedure_id : 1891210886552646592
+     type_code : 12
+     code : |1+
+      procédure Update()
+      
+      // convertir le json en variante 
+      LOCAL
+      	m_ReqSQL			est une source de données
+      	l_tabRecord			est un variant
+      	l_where				est une chaîne
+      	l_corpReq			est une chaîne
+      
+      l_tabRecord = JSONVersVariant(m_json)
+      m_Sql = "Update" + RC + m_table + rc + "set"
+      
+      pour tout l_ligne de l_tabRecord
+      	si l_ligne..Nom = m_key ALORS
+      		l_where ="Where" + rc + l_ligne..Nom + "= '" + l_ligne..Valeur + "'"
+      
+      	sinon
+      	l_corpReq+=[","+rc]+ l_ligne..nom + "= '" + l_ligne..Valeur + "'"
+      	fin
+      	
+      FIN
+      
+      m_Sql +=RC + l_corpReq+RC + l_where
+      
+      HExécuteRequêteSQL(m_ReqSQL,m_base.m_connexion,hRequêteSansCorrection,m_Sql)
+      
+      CAS ERREUR:
+      m_base.Déconnexion()
+      m_erreur = ErreurInfo()
+      
+      
+      
+      CAS EXCEPTION:
+      m_base.Déconnexion()
+      m_erreur = ExceptionInfo()
+      
+      
+      FIN :
+      m_base.Déconnexion()
+     type : 458752
+   -
+     name : Create
+     procedure_id : 1891210886552712128
+     type_code : 12
+     code : |1-
+      procédure Create()
+      
+      HRAZ(m_table)
+      {m_table,indFichier} = _JsonToRecord()
+      HAjoute(m_table,hAffecteParcours)
+      
+      l_enrg est un Enregistrement = {m_table,indFichier}
+      Sérialise(l_enrg,m_json,psdJSON)
+      
+      
+      CAS ERREUR:
+      m_base.Déconnexion()
+      m_erreur = ErreurInfo()
+      
+      
+      
+      CAS EXCEPTION:
+      m_base.Déconnexion()
+      m_erreur = ExceptionInfo()
+      
+      
+      FIN :
+      m_base.Déconnexion()
+     type : 458752
+   -
+     name : _JsonToRecord
+     procedure_id : 1891210886552777664
+     type_code : 12
+     code : |1+
+      procédure privée _JsonToRecord():Enregistrement
+      
+      V_enr		est un variant	= JSONVersVariant(m_json)
+      E_record	est un Enregistrement
+      E_record = {m_table}
+      
+      POUR i=1 _a_ V_enr..Membre..Occurrence
+      	{"E_record."+V_enr..Membre[i]..Nom} = V_enr..Membre[i]..Valeur 	
+      FIN
+      
+      renvoyer E_record
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : BQAAAAUAAAA6ih3UbgNXHwTtiPSFUEj+2fi/m7v4QV2rqidAupM=
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x15001ee601753ab9
+  internal_properties : BQAAAAUAAAAnMYFQ1bL/vz9ehh7L22SNNSlIzGTOI8h5F/WtgDNP
+custom_note :
+ internal_properties : BQAAAAUAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ
