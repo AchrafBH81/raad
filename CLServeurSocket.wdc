@@ -16,7 +16,7 @@ class :
    -
      code : |1+
       CLServeurSocket est une Classe
-      	m_Proc_CallBack			est une procédure
+      	m_ProcedureRappel			est une procédure
       Prive
       	m_configuration   est CLConfiguration dynamique
       	m_PortSocket		est un entier	= 5010
@@ -92,7 +92,7 @@ class :
       		l_CanalSocket.m_NomSocket		= sNomConnexion
       		l_CanalSocket.m_AdresseClient	= SocketClientInfo(sNomConnexion,SocketAdresse)
       		
-      		m_Proc_CallBack(l_CanalSocket)
+      		m_ProcedureRappel(l_CanalSocket)
       		
       		SocketEcrit(sNomConnexion,l_CanalSocket.m_MessageSocketReponse)
       	fin

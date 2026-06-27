@@ -17,7 +17,7 @@ class :
      code : |1+
       CLGestionnaireStructureProjet est une Classe
       	PRIVÉ
-      	m_RepProjects				est une chaîne		
+      	m_RepProjets				est une chaîne		
       	m_RepLog					est une chaîne
       	m_RepConf					est une chaine      
       	m_RepertoireExecutable					est une chaîne 
@@ -52,13 +52,13 @@ class :
       
       // Création des répertoires 
       m_RepertoireExecutable		= fRepExe()+["\"]
-      m_RepProjects	= m_RepertoireExecutable+"Projects"	
+      m_RepProjets	= m_RepertoireExecutable+"Projects"	
       m_RepLog		= m_RepertoireExecutable+"Logs"
       m_RepConf		= m_RepertoireExecutable+"Conf"
       m_RepSys		= m_RepertoireExecutable+"Systeme"
       
        
-      SI PAS fRépertoireExiste(m_RepProjects) ALORS fRepCrée(m_RepProjects)
+      SI PAS fRépertoireExiste(m_RepProjets) ALORS fRepCrée(m_RepProjets)
       SI PAS fRépertoireExiste(m_RepLog) ALORS fRepCrée(m_repLog)
       SI PAS fRépertoireExiste(m_RepConf) ALORS fRepCrée(m_RepConf)
       SI PAS fRépertoireExiste(m_RepSys) ALORS fRepCrée(m_RepSys)
@@ -490,7 +490,7 @@ class :
         code : |1+
          procédure publique P_RepProjects()
          
-         renvoyer m_RepProjects
+         renvoyer m_RepProjets
         type : 1966080
      template_refs : []
   procedure_templates : []

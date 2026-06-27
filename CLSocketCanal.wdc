@@ -73,14 +73,14 @@ class :
       m_UrlRecue		= SansEspace(m_EnteteRequete[[m_PositionUrl+1 À Position(m_EnteteRequete,"HTTP",m_PositionUrl)-1]])
       m_PointDEntree	= Minuscule( m_UrlRecue[[  À Position(m_UrlRecue,"/")-1 ]])
       
-      _GetParam()
+      _ExtraireParametres()
      type : 458752
    -
-     name : _GetParam
+     name : _ExtraireParametres
      procedure_id : 1891211195791150258
      type_code : 12
      code : |1-
-      procédure privée _GetParam()
+      procédure privée _ExtraireParametres()
       Local
       L_indicePosition	est un entier
       

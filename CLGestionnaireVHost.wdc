@@ -78,15 +78,15 @@ class :
       FIN
      type : 458752
    -
-     name : GetRepertoireProjet
+     name : LireRepertoireProjet
      procedure_id : 1869638081872692230
      type_code : 12
      code : |1+
       //-------------------------------------------------------------------------
-      // Méthode : GetRepertoireProjet
+      // Méthode : LireRepertoireProjet
       // But     : Retourne le dossier cible pour un host donné
       //-------------------------------------------------------------------------
-      procédure publique GetRepertoireProjet(LOCAL a_Host est une chaîne) : chaîne
+      procédure publique LireRepertoireProjet(LOCAL a_Host est une chaîne) : chaîne
       
       // On vérifie si l'hôte existe dans notre tableau
       SI m_tabVHosts[a_Host] <> "" ALORS

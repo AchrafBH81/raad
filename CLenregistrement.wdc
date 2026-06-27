@@ -104,11 +104,11 @@ class :
       
      type : 458752
    -
-     name : Load
+     name : Charger
      procedure_id : 1891210886552581056
      type_code : 12
      code : |1-
-      procédure Load(local a_valkey est une chaîne, a_condition est une chaîne)
+      procédure Charger(local a_valkey est une chaîne, a_condition est une chaîne)
       
       m_valkey	= a_valkey
       m_condition	= a_condition
@@ -150,11 +150,11 @@ class :
       m_base.Déconnexion()
      type : 458752
    -
-     name : Update
+     name : Modifier
      procedure_id : 1891210886552646592
      type_code : 12
      code : |1+
-      procédure Update()
+      procédure Modifier()
       
       // convertir le json en variante 
       LOCAL
@@ -195,14 +195,14 @@ class :
       m_base.Déconnexion()
      type : 458752
    -
-     name : Create
+     name : Creer
      procedure_id : 1891210886552712128
      type_code : 12
      code : |1-
-      procédure Create()
+      procédure Creer()
       
       HRAZ(m_table)
-      {m_table,indFichier} = _JsonToRecord()
+      {m_table,indFichier} = _JsonVersEnregistrement()
       HAjoute(m_table,hAffecteParcours)
       
       l_enrg est un Enregistrement = {m_table,indFichier}
@@ -224,21 +224,21 @@ class :
       m_base.Déconnexion()
      type : 458752
    -
-     name : _JsonToRecord
+     name : _JsonVersEnregistrement
      procedure_id : 1891210886552777664
      type_code : 12
      code : |1+
-      procédure privée _JsonToRecord():Enregistrement
+      procédure privée _JsonVersEnregistrement():Enregistrement
       
-      V_enr		est un variant	= JSONVersVariant(m_json)
-      E_record	est un Enregistrement
-      E_record = {m_table}
+      VariantEnregistrement		est un variant	= JSONVersVariant(m_json)
+      NouvelEnregistrement	est un Enregistrement
+      NouvelEnregistrement = {m_table}
       
-      POUR i=1 _a_ V_enr..Membre..Occurrence
-      	{"E_record."+V_enr..Membre[i]..Nom} = V_enr..Membre[i]..Valeur 	
+      POUR i=1 _a_ VariantEnregistrement..Membre..Occurrence
+      	{"E_record."+VariantEnregistrement..Membre[i]..Nom} = VariantEnregistrement..Membre[i]..Valeur 	
       FIN
       
-      renvoyer E_record
+      renvoyer NouvelEnregistrement
      type : 458752
   procedure_templates : []
   property_templates : []

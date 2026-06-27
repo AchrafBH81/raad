@@ -161,7 +161,7 @@ class :
       
       // Configuration du Serveur
       m_ServeurSocket								= allouer un CLServeurSocket
-      m_ServeurSocket.m_Proc_CallBack				= MessageRecu
+      m_ServeurSocket.m_ProcedureRappel				= MessageRecu
       m_ServeurSocket.P_PortSocket				= Val(m_Configuration.LireParametre("Serveur", "Port", "8080"))
       m_ServeurSocket.P_CheminPhpCgi				= m_Configuration.LireParametre("Serveur", "CheminPhpCgi", "")
       m_ServeurSocket.p_NomSocketEcoute			= "SocketRaaD"
@@ -179,7 +179,7 @@ class :
       L_EnregistrementCourant est  clenregistrement
       L_EnregistrementCourant <= m_Base.m_Table[L_RequeteHttp.m_Parametres["table"]]
       
-      L_EnregistrementCourant.Load(L_RequeteHttp.m_Parametres["valkey"],L_RequeteHttp.m_Parametres["condition"])
+      L_EnregistrementCourant.Charger(L_RequeteHttp.m_Parametres["valkey"],L_RequeteHttp.m_Parametres["condition"])
       
       si L_EnregistrementCourant.m_erreur <> "" ALORS
       	L_RequeteHttp.m_CodeReponse		= "401"
@@ -278,7 +278,7 @@ class :
       L_EnregistrementCourant <= m_Base.m_Table[L_RequeteHttp.m_Parametres["table"]]
       
       L_EnregistrementCourant.m_json = L_RequeteHttp.m_CorpsRequete
-      L_EnregistrementCourant.Update()
+      L_EnregistrementCourant.Modifier()
       
       SI L_EnregistrementCourant.m_erreur <> "" ALORS
       	L_RequeteHttp.m_CodeReponse		= "401"
@@ -310,7 +310,7 @@ class :
       
       
       L_EnregistrementCourant.m_json = L_RequeteHttp.m_CorpsRequete
-      L_EnregistrementCourant.Create()
+      L_EnregistrementCourant.Creer()
       
       SI L_EnregistrementCourant.m_erreur <> "" ALORS
       	L_RequeteHttp.m_CodeReponse		= "401"
