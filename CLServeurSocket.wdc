@@ -123,8 +123,12 @@ class :
       
       SocketChangeModeTransmission(m_NomSocketEcoute,SocketSansMarqueurFin)
       
-      _LancerServeurHttpsEntrantAsync()
-      
+      // =========================================================================
+      // DÉMARRAGE DU REVERSE-PROXY HTTPS (Appel vers l'assemblage C#)
+      // =========================================================================
+      // On encapsule l'appel dans un ThreadExécute pour que la boucle infinie 
+      // du code C# ne bloque pas le démarrage du serveur WLangage.
+      ThreadExécute("Thread_Proxy_HTTPS", threadNormal, _LancerServeurHttpsEntrantAsync)
       
       
       SI ErreurDétectée ALORS
