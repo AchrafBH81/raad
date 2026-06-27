@@ -79,7 +79,6 @@ class :
       procédure privée GestionConnexion(local sNomConnexion est chaine)
       
       
-      SectionCritiqueDébut(sNomConnexion)
       
       l_CanalSocket est un CLCanalSocket dynamique = new CLCanalSocket(m_configuration)
       
@@ -100,12 +99,10 @@ class :
       	
       	// Fermeture de la socket
       	SocketFerme(sNomConnexion)
-      	SectionCritiqueFin(sNomConnexion)
       	
       FAIRE
       	
       	SocketFerme(sNomConnexion)
-      	SectionCritiqueFin(sNomConnexion)
       	
       FIN
       

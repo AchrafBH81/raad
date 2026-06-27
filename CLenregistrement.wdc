@@ -154,44 +154,68 @@ class :
      procedure_id : 1891210886552646592
      type_code : 12
      code : |1+
+      
+      
       procédure Modifier()
+      // [ARCHITECTURE RAAD : SÉCURITÉ ANTI-INJECTION SQL]
+      // RÈGLE ABSOLUE : Zéro concaténation de valeurs clientes dans les requêtes SQL.
+      // Nous utilisons une variable de type 'Source de Données' couplée à hRequêteDéfaut.
+      // L'affectation dynamique des paramètres se fait via indirection : 
+      // {"MaSource.MonParametre"} = Valeur. Le moteur HFSQL gère le typage et l'échappement.
       
-      // convertir le json en variante 
+      
       LOCAL
-      	L_ReqSQL			est une source de données
-      	l_tabRecord			est un variant
-      	l_where				est une chaîne
-      	l_corpReq			est une chaîne
-      
-      l_tabRecord = JSONVersVariant(m_json)
-      m_RequeteSQL = "Update" + RC + m_table + rc + "set"
-      
-      pour tout l_ligne de l_tabRecord
-      	si l_ligne..Nom = m_key ALORS
-      		l_where ="Where" + rc + l_ligne..Nom + "= '" + l_ligne..Valeur + "'"
-      
-      	sinon
-      	l_corpReq+=[","+rc]+ l_ligne..nom + "= '" + l_ligne..Valeur + "'"
-      	fin
+      	l_SourceRequete		est une Source de Données
+      	l_DonneesJson		est un Variant
+      	l_ClauseWhere		est une chaîne
+      	l_CorpsReq			est une chaîne
+      	l_NomParametre		est une chaîne
       	
+      // 1. Initialisation et Connexion
+      m_base.Connexion()
+      
+      l_DonneesJson	= JSONVersVariant(m_json)
+      
+      // 2. Construction de l'ossature SQL paramétrée
+      m_RequeteSQL	= "UPDATE " + m_table + RC + "SET "
+      
+      POUR TOUT l_Ligne DE l_DonneesJson
+      	
+      	// Création d'un nom de paramètre unique (ex: p_Prix)
+      	l_NomParametre = "p_" + l_Ligne..Nom
+      	
+      	SI l_Ligne..Nom = m_key ALORS
+      		l_ClauseWhere = "WHERE " + l_Ligne..Nom + " = {" + l_NomParametre + "}"
+      	SINON
+      		// Ajoute automatiquement la virgule si l_CorpsReq n'est pas vide
+      		l_CorpsReq += [", " + RC] + l_Ligne..Nom + " = {" + l_NomParametre + "}"
+      	FIN
+      	
+      	// 3. SECRÉTAIRE ANTI-INJECTION : Affectation de la valeur en tant que PARAMÈTRE
+      	// L'indirection crée la propriété de paramètre à la volée sur la source de données.
+      	// Équivaut à taper : l_SourceRequete.p_Prix = 10
+      	{"l_SourceRequete." + l_NomParametre} = l_Ligne..Valeur
       FIN
       
-      m_RequeteSQL +=RC + l_corpReq+RC + l_where
+      // 4. Assemblage final de la requête SQL paramétrée
+      m_RequeteSQL += RC + l_CorpsReq + RC + l_ClauseWhere
       
-      HExécuteRequêteSQL(L_ReqSQL,m_base.m_connexion,hRequêteSansCorrection,m_RequeteSQL)
+      // 5. Exécution sécurisée
+      // La constante hRequêteDéfaut indique à HFSQL d'analyser la chaîne, d'y repérer 
+      // les variables {...} et de les lier aux paramètres affectés à l_SourceRequete.
+      SI PAS HExécuteRequêteSQL(l_SourceRequete, m_base.m_connexion, hRequêteDéfaut, m_RequeteSQL) ALORS
+      	m_erreur = ErreurInfo()
+      FIN
+      
       
       CAS ERREUR:
-      m_base.Déconnexion()
       m_erreur = ErreurInfo()
       
-      
-      
       CAS EXCEPTION:
-      m_base.Déconnexion()
       m_erreur = ExceptionInfo()
       
-      
       FIN :
+      // Exécuté dans tous les cas
       m_base.Déconnexion()
      type : 458752
    -

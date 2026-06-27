@@ -143,59 +143,91 @@ class :
      type : 458752
    -
      name : ObtenirFichier
-     internal_properties : BQAAAAUAAAD36zHHNzqf1YsqeKhuAost9QyLwtABFfotENHsY2gZ1tIU31foK+W8B+1m+nSsxbHfm/GkZcbbPfhdiIe+tbDcWiNV06NQpF7AYcpRx8WSEW3D21cMjgb70UHvmaq+VJnA8JlXt5UwyTVd2ci9xpX8Trv96APNobyVszOFLo7Ane9K+sJcAL0SB11kzofqtIhi5g==
      procedure_id : 1891211195791346866
      type_code : 12
-     code : |1+
+     code : |1-
       procédure publique  ObtenirFichier() <métier>
       
-      m_UrlRecue	= Remplace(m_UrlRecue, "/", "\") // Uniformiser les séparateurs Windows
-      m_UrlRecue	= Remplace(m_UrlRecue, "..\", "") // INTERDIRE de remonter d'un dossier
+      // [ARCHITECTURE RAAD : SÉCURITÉ ET OPTIMISATION I/O]
+      // 1. Anti Directory-Traversal (CWE-22) : Tout chemin contenant ".." ou ":" est 
+      //    immédiatement rejeté (Erreur 403). On ne nettoie pas, on bloque.
+      // 2. Performances (O(1)) : Interdiction d'utiliser fRepExe() à la volée. 
+      //    Le chemin racine (WWW) est lu directement depuis la configuration pré-chargée en RAM.
       
-      
-      
-      
+      LOCAL
+      	l_CheminBaseWWW		est une chaîne
+      	l_CheminComplet		est une chaîne
+      	
+      // 1. Initialisation par défaut
       m_CodeReponse = "200 OK"
       
-      
-      SI m_UrlRecue	 = "" ALORS
-      	m_UrlRecue		= "RAAD\index.html"
-      	m_Extension	= ".html"
-      SINON
-      	SI Position(m_UrlRecue,"?") > 1 ALORS  m_UrlRecue = m_UrlRecue[ À Position(m_UrlRecue,"?")-1]
-      	m_UrlRecue	= Remplace(m_UrlRecue ,"/","\")
-      	m_Extension	= m_UrlRecue[Position(m_UrlRecue,".",0,DepuisFin) À ]
+      // 2. Nettoyage initial des paramètres d'URL (Retrait de tout ce qui suit le '?')
+      SI Position(m_UrlRecue, "?") > 1 ALORS  
+      	m_UrlRecue = m_UrlRecue[[ À Position(m_UrlRecue, "?") - 1]]
       FIN
       
+      // Uniformisation des séparateurs pour le système de fichiers Windows
+      m_UrlRecue = Remplace(m_UrlRecue, "/", "\")
       
+      // =================================================================================
+      // 3. BLINDAGE ANTI-DIRECTORY TRAVERSAL & INJECTION DE CHEMIN ABSOLU
+      // =================================================================================
+      // On bloque toute tentative de remonter dans l'arborescence ("..") 
+      // ou d'attaquer la racine d'un disque (":") ex: "C:\Windows"
+      SI Position(m_UrlRecue, "..") > 0 OU Position(m_UrlRecue, ":") > 0 ALORS
+      	m_CodeReponse	= "403"
+      	// On présume que la configuration contient une page d'erreur 403
+      	m_ContenuBuffer	= m_configuration.m_TabReponse[403] 
+      	RETOUR
+      FIN
+      
+      // 4. Routage par défaut (Page d'accueil)
+      SI m_UrlRecue = "" OU m_UrlRecue = "\" ALORS
+      	m_UrlRecue = "index.html"
+      FIN
+      
+      // Extraction très rapide de l'extension pour le type MIME et le traitement
+      m_Extension		= m_UrlRecue[Position(m_UrlRecue, ".", 0, DepuisFin) À ]
+      
+      // =================================================================================
+      // 5. OPTIMISATION MÉMOIRE : CONSTRUCTION DU CHEMIN SANS ACCÈS DISQUE (Zéro fRepExe)
+      // =================================================================================
+      // On récupère le répertoire cible directement depuis l'instance de configuration en RAM.
+      // (Assure-toi que "RepertoireWWW" est bien chargé lors de l'initialisation du serveur).
+      l_CheminBaseWWW	= m_configuration.LireParametre("Serveur", "RepertoireWWW", "C:\RaaD\WWW")
+      l_CheminComplet	= ComplèteRep(l_CheminBaseWWW) + m_UrlRecue
+      
+      
+      // 6. Lecture et Traitement du fichier cible
       QUAND EXCEPTION DANS 
       	
-      	selon m_extension
-      		cas ".php"
-      		
-      		m_ContenuBuffer = Col_raad.ExecuterPhp(m_configuration.LireParametre("Serveur","CheminPhpCgi",""),fRepExe()+["\"]+"WWW\"+m_UrlRecue)
-      		
-      		
-      		AUTRE CAS
-      		m_ContenuBuffer   = fChargeBuffer(fRepExe()+["\"]+"WWW\"+m_UrlRecue)	
+      	SELON m_Extension
+      		CAS ".php" :
+      			// L'exécution PHP reste synchrone au thread courant
+      			m_ContenuBuffer = ExecuterPhp(m_configuration.LireParametre("Serveur", "CheminPhpCgi", ""), l_CheminComplet)
+      			
+      		AUTRE CAS :
+      			// Chargement brutal en mémoire. C'est l'OS qui gèrera le cache disque (File System Cache).
+      			m_ContenuBuffer = fChargeBuffer(l_CheminComplet)	
       	FIN
       	
-      	SI m_ContenuBuffer ="" ALORS 
-      		// Code 404 si on ne trouve pas l'élément 
-      		m_CodeReponse	= 404
+      	// Si le buffer est vide ET que le fichier n'existe pas physiquement (évite les faux positifs sur les fichiers de 0 octet)
+      	SI m_ContenuBuffer = "" ET PAS fFichierExiste(l_CheminComplet) ALORS 
+      		m_CodeReponse	= "404"
       		m_ContenuBuffer	= m_configuration.m_TabReponse[404]
-      	FIN
-      	
-      	SI m_Extension DANS (".html",".css",".js",".txt",".xml",".json",".csv",".php",".asp",".jsp",".woff",".svg",".woff2",".ttf",".eot","hml") ALORS
-      		m_ContenuBuffer	= Compresse(m_ContenuBuffer,compresseGZIP)
-      		m_Gzip			= Vrai
+      	SINON 
+      		// 7. Compression à la volée pour économiser la bande passante réseau
+      		SI m_Extension DANS (".html", ".css", ".js", ".txt", ".xml", ".json", ".csv", ".php", ".asp", ".jsp", ".woff", ".svg", ".woff2", ".ttf", ".eot") ALORS
+      			m_ContenuBuffer	= Compresse(m_ContenuBuffer, compresseGZIP)
+      			m_Gzip			= Vrai
+      		FIN
       	FIN
       	
       FAIRE
-      	// Code 500 
-      	m_CodeReponse	= 500
+      	// Capture silencieuse (Thread-Safe) : Retour HTTP 500
+      	// Ne jamais utiliser Erreur() ici sous peine de bloquer le serveur WLangage
+      	m_CodeReponse	= "500"
       	m_ContenuBuffer	= m_configuration.m_TabReponse[500]
-      	
       FIN
      type : 458752
   procedure_templates : []
