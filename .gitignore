@@ -11,3 +11,4 @@ CLConfiguration.wdc.cache
 *.cache
 /.NET
 Classe1.wdc
+*.log
